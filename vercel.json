@@ -1,0 +1,9 @@
+{
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/lakewatch/datasources/ingest",
+      "permanent": false
+    }
+  ]
+}
