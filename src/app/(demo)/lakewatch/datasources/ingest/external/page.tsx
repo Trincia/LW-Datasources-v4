@@ -18,6 +18,10 @@ import {
   TableConfigurationExpanded,
   useAutoConfigureSequence,
 } from "@/components/lakewatch/ingest-v4/TableConfigurationForm"
+import {
+  CLOUD_STORAGE_CONFIGURED_SAVED_HREF,
+  CLOUD_STORAGE_INGEST_SAVED_HREF,
+} from "@/components/lakewatch/ingest-v4/pipelineDagShared"
 import { useIngestPreviewFlow } from "@/components/lakewatch/ingest-v4/useIngestPreviewFlow"
 
 const INGEST_NOTIFICATION_DELAY_MS = 3000
@@ -84,7 +88,13 @@ export default function ExternalDatasourceIngestPage() {
           activeStep="ingest"
           showBronzeStep={isRunning || step > 0 || previewOpen}
           ingested={ingested}
-          onSaveDatasource={() => router.push("/lakewatch/datasources/ingest/external/saved")}
+          onSaveDatasource={() => {
+            router.push(
+              previewVariant === "configured"
+                ? CLOUD_STORAGE_CONFIGURED_SAVED_HREF
+                : CLOUD_STORAGE_INGEST_SAVED_HREF
+            )
+          }}
           headerNotification={
             <IngestSuccessNotification
               open={showIngestNotification}

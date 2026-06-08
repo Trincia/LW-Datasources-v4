@@ -8,18 +8,30 @@ import { cn } from "@/lib/utils"
 export const DATASOURCE_PAGE_HEADER_LEFT_CLASS =
   "flex min-w-0 flex-1 flex-col gap-2"
 
+export function formatDatasourceDisplayTitle(name: string, draft = false) {
+  return `${draft ? "New " : ""}${name}`
+}
+
 export function EditableDatasourceTitle({
   defaultName,
   draft = false,
   className,
+  onDisplayTitleChange,
 }: {
   defaultName: string
   draft?: boolean
   className?: string
+  onDisplayTitleChange?: (displayTitle: string) => void
 }) {
   const [name, setName] = React.useState(defaultName)
   const [isEditing, setIsEditing] = React.useState(false)
   const inputRef = React.useRef<HTMLInputElement>(null)
+
+  const displayTitle = formatDatasourceDisplayTitle(name, draft)
+
+  React.useEffect(() => {
+    onDisplayTitleChange?.(displayTitle)
+  }, [displayTitle, onDisplayTitleChange])
 
   React.useEffect(() => {
     if (isEditing) {
@@ -32,8 +44,6 @@ export function EditableDatasourceTitle({
     setName((current) => current.trim() || defaultName)
     setIsEditing(false)
   }, [defaultName])
-
-  const displayTitle = `${draft ? "New " : ""}${name}`
 
   if (isEditing) {
     return (

@@ -40,7 +40,13 @@ const DEMO_SCREENS = [
     id: "saved",
     label: "5. Saved",
     href: "/lakewatch/datasources/ingest/external/saved",
-    figma: "731:26707",
+    figma: "903:16972",
+  },
+  {
+    id: "saved-bronze",
+    label: "5b. Saved+Bronze",
+    href: "/lakewatch/datasources/ingest/external/saved-bronze",
+    figma: "903:17108",
   },
 ] as const
 

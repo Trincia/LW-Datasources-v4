@@ -1,9 +1,9 @@
 "use client"
 
 import { LakewatchAppShell } from "@/components/lakewatch"
-import { SavedDatasourcePipelineView } from "@/components/lakewatch/ingest-v4/SavedDatasourcePipelineView"
+import { CloudStorageIngestSavedPipelineView } from "@/components/lakewatch/ingest-v4/CloudStorageIngestSavedPipelineView"
 
-/** Figma 731:26707 — saved datasource pipeline view */
+/** Figma 903:16972 — cloud storage saved after ingest-only */
 export default function SavedDatasourcePage() {
   return (
     <LakewatchAppShell
@@ -12,7 +12,7 @@ export default function SavedDatasourcePage() {
       userInitial="J"
       mainClassName="flex flex-col overflow-hidden"
     >
-      <SavedDatasourcePipelineView />
+      <CloudStorageIngestSavedPipelineView />
     </LakewatchAppShell>
   )
 }

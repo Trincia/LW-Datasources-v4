@@ -14,7 +14,12 @@ export const SAVED_BRONZE_FIELD_LIST_TEXT = "Current field list: 27 fields added
 export const SAVED_SILVER_FIELD_LIST_TEXT = "Current field list: 37 fields added"
 export const CROWDSTRIKE_LOGO_SRC = "/lakewatch/preset-logos/crowdstrike-logo.png"
 export const PIPELINE_CARD_WIDTH_PX = 280
+export const PIPELINE_DETAIL_CARD_WIDTH_PX = 364
 export const PIPELINE_CARD_GAP_PX = 45
+export const CLOUD_STORAGE_INGEST_SAVED_HREF =
+  "/lakewatch/datasources/ingest/external/saved"
+export const CLOUD_STORAGE_CONFIGURED_SAVED_HREF =
+  "/lakewatch/datasources/ingest/external/saved-bronze"
 export const PIPELINE_ADD_TRANSFORM_GAP_PX = 40
 export const PIPELINE_EDGE_STROKE = "#445461"
 
@@ -535,6 +540,7 @@ export function PipelineNodeCard({
   children,
   className,
   height,
+  width = PIPELINE_CARD_WIDTH_PX,
 }: {
   icon?: React.ReactNode
   title: string
@@ -542,14 +548,18 @@ export function PipelineNodeCard({
   children: React.ReactNode
   className?: string
   height?: number
+  width?: number
 }) {
   return (
     <article
       className={cn(
-        "relative z-[1] flex w-[280px] shrink-0 flex-col overflow-hidden rounded-lg border border-border bg-background shadow-xs",
+        "relative z-[1] flex shrink-0 flex-col overflow-hidden rounded-lg border border-border bg-background shadow-xs",
         className
       )}
-      style={height ? { height } : undefined}
+      style={{
+        width,
+        ...(height ? { height } : {}),
+      }}
     >
       <div className="flex flex-col gap-2 px-4 py-2">
         <div className="flex items-center gap-2">

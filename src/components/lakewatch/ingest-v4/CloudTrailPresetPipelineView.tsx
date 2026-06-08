@@ -1,8 +1,7 @@
 "use client"
 
 import * as React from "react"
-import Link from "next/link"
-import { ChevronDownIcon, Info, Plus } from "lucide-react"
+import { Info, Plus } from "lucide-react"
 import { ArrowInIcon, TableIcon } from "@/components/icons"
 import {
   ActiveBadge,
@@ -17,18 +16,7 @@ import {
   CLOUDTRAIL_PIPELINE_LAYOUT,
 } from "@/components/lakewatch/ingest-v4/pipelineDagShared"
 import { AddTransformSplitButton } from "@/components/lakewatch/ingest-v4/AddTransformSplitButton"
-import {
-  DATASOURCE_PAGE_HEADER_LEFT_CLASS,
-  EditableDatasourceTitle,
-} from "@/components/lakewatch/ingest-v4/EditableDatasourceTitle"
-import { SaveDatasourceSplitButton } from "@/components/lakewatch/ingest-v4/SaveDatasourceSplitButton"
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
+import { SavedDatasourcePageHeader } from "@/components/lakewatch/ingest-v4/SavedDatasourcePageHeader"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -38,7 +26,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { SegmentedControl, SegmentedItem } from "@/components/ui/segmented-control"
 import { Switch } from "@/components/ui/switch"
 
 const INGEST_CARD_HEIGHT_PX = CLOUDTRAIL_PIPELINE_LAYOUT.ingestHeight
@@ -49,58 +36,16 @@ const SILVER_CARD_HEIGHT_PX = CLOUDTRAIL_PIPELINE_LAYOUT.silverHeight
 const GOLD_CARD_HEIGHT_PX = CLOUDTRAIL_PIPELINE_LAYOUT.goldHeight
 const GOLD_CARD_4_HEIGHT_PX = CLOUDTRAIL_PIPELINE_LAYOUT.gold4Height
 
-function DatasourceDetailWorkspaceActions() {
-  const [viewMode, setViewMode] = React.useState("ui")
-
-  return (
-    <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
-      <div className="flex h-8 min-w-[240px] items-center gap-2 rounded border border-border bg-background px-3 shadow-xs">
-        <span className="size-2 shrink-0 rounded-full bg-green-500" aria-hidden />
-        <span className="min-w-0 flex-1 truncate text-[13px] text-foreground">Lakewatch Warehouse</span>
-        <ChevronDownIcon size={16} className="shrink-0 text-muted-foreground" />
-      </div>
-      <SegmentedControl value={viewMode} onValueChange={setViewMode} className="h-8">
-        <SegmentedItem value="ui" className="px-3 text-[13px]">
-          UI
-        </SegmentedItem>
-        <SegmentedItem value="yaml" className="px-3 text-[13px]">
-          YAML
-        </SegmentedItem>
-      </SegmentedControl>
-      <Button variant="default" size="sm" className="shadow-xs" type="button">
-        Permissions
-      </Button>
-      <Button variant="default" size="sm" className="shadow-xs" asChild>
-        <Link href="/lakewatch/datasources/ingest/external">Cancel</Link>
-      </Button>
-      <SaveDatasourceSplitButton disabled={false} />
-    </div>
-  )
-}
-
 /** Figma 841:48115 — CloudTrail preset full medallion pipeline */
 export function CloudTrailPresetPipelineView() {
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
       <div className="flex flex-1 flex-col gap-6 overflow-y-auto p-6 md:p-8">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-          <div className={DATASOURCE_PAGE_HEADER_LEFT_CLASS}>
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <Link href="/lakewatch/datasources" className="text-primary hover:text-primary/90">
-                      Datasources
-                    </Link>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-              </BreadcrumbList>
-            </Breadcrumb>
-            <EditableDatasourceTitle defaultName="CloudTrail 1" draft />
-          </div>
-          <DatasourceDetailWorkspaceActions />
-        </div>
+        <SavedDatasourcePageHeader
+          defaultName="CloudTrail 1"
+          draft
+          cancelHref="/lakewatch/datasources/ingest/external"
+        />
 
         <div className="rounded-md border border-border bg-background px-4 py-3 shadow-[var(--shadow-db-sm)]">
           <div className="flex flex-wrap items-center gap-3">
