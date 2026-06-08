@@ -54,9 +54,9 @@ export function IngestSourcePicker() {
     <div className="flex flex-1 flex-col overflow-y-auto p-6 md:p-8">
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div className="flex min-w-0 flex-col gap-2">
-            <IngestBreadcrumb items={[{ label: "Current datasources", href: "/lakewatch/datasources" }]} />
-            <h1 className={PAGE_TITLE_BOLD}>Ingest</h1>
+        <div className="flex min-w-0 flex-1 flex-col gap-2">
+          <IngestBreadcrumb items={[{ label: "Current datasources", href: "/lakewatch/datasources" }]} />
+          <h1 className={cn(PAGE_TITLE_BOLD, "w-fit")}>Ingest</h1>
             <h2 className="text-lg font-semibold leading-6 text-foreground">
               Select source data location
             </h2>

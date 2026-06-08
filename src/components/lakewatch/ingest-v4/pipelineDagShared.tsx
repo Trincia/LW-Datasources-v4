@@ -2,13 +2,20 @@
 
 import * as React from "react"
 import { Check } from "lucide-react"
+import { TableIcon } from "@/components/icons"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
 import { cn } from "@/lib/utils"
 
 export const S3_CLOUDTRAIL_PATH = "s3://aws-cloudtrail-logs-905418055418-719340f6/"
+export const SAVED_BRONZE_TABLE_NAME = "crowdstrike_fdr"
+export const SAVED_SILVER_TABLE_NAME = "crowdstrike_fdr_silver_1"
+export const SAVED_BRONZE_FIELD_LIST_TEXT = "Current field list: 27 fields added"
+export const SAVED_SILVER_FIELD_LIST_TEXT = "Current field list: 37 fields added"
+export const CROWDSTRIKE_LOGO_SRC = "/lakewatch/preset-logos/crowdstrike-logo.png"
 export const PIPELINE_CARD_WIDTH_PX = 280
 export const PIPELINE_CARD_GAP_PX = 45
+export const PIPELINE_ADD_TRANSFORM_GAP_PX = 40
 export const PIPELINE_EDGE_STROKE = "#445461"
 
 export const CLOUDTRAIL_PIPELINE_LAYOUT = {
@@ -17,7 +24,7 @@ export const CLOUDTRAIL_PIPELINE_LAYOUT = {
   bronzeHeight: 226,
   silverHeight: 147,
   silverGap: 48,
-  goldHeight: 147,
+  goldHeight: 200,
   goldGap: 16,
   gold4Height: 161,
   ingestBronzeGap: 30,
@@ -51,6 +58,9 @@ const FORK_PATHS = {
 export const CLOUDTRAIL_PRESET_PIPELINE_HREF =
   "/lakewatch/datasources/ingest/external/cloudtrail-pipeline"
 
+export const EXISTING_SAVE_TO_SILVER_HREF =
+  "/lakewatch/datasources/ingest/existing/save-to-silver"
+
 export function SavedPipelineDotGrid() {
   return (
     <div className="pointer-events-none absolute inset-0" aria-hidden>
@@ -62,6 +72,37 @@ export function SavedPipelineDotGrid() {
           backgroundPosition: "top left",
         }}
       />
+    </div>
+  )
+}
+
+function PipelineEdgeLine() {
+  return (
+    <>
+      <span
+        className="absolute left-[-4px] top-1/2 z-[1] size-2 -translate-y-1/2 rounded-full border bg-background"
+        style={{ borderColor: PIPELINE_EDGE_STROKE }}
+      />
+      <span
+        className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2"
+        style={{ backgroundColor: PIPELINE_EDGE_STROKE }}
+      />
+      <span
+        className="absolute right-[-4px] top-1/2 z-[1] size-2 -translate-y-1/2 rounded-full border bg-background"
+        style={{ borderColor: PIPELINE_EDGE_STROKE }}
+      />
+    </>
+  )
+}
+
+export function PipelineInlineEdge({ width = PIPELINE_CARD_GAP_PX }: { width?: number }) {
+  return (
+    <div
+      className="relative z-[2] h-2 shrink-0 self-center"
+      style={{ width }}
+      aria-hidden
+    >
+      <PipelineEdgeLine />
     </div>
   )
 }
@@ -85,18 +126,7 @@ export function PipelineEdgeConnector({
       style={top === undefined ? style : { top, ...style }}
       aria-hidden
     >
-      <span
-        className="absolute left-[-4px] top-1/2 z-[1] size-2 -translate-y-1/2 rounded-full border bg-background"
-        style={{ borderColor: PIPELINE_EDGE_STROKE }}
-      />
-      <span
-        className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2"
-        style={{ backgroundColor: PIPELINE_EDGE_STROKE }}
-      />
-      <span
-        className="absolute right-[-4px] top-1/2 z-[1] size-2 -translate-y-1/2 rounded-full border bg-background"
-        style={{ borderColor: PIPELINE_EDGE_STROKE }}
-      />
+      <PipelineEdgeLine />
     </div>
   )
 }
@@ -236,7 +266,7 @@ export function ActiveBadge() {
 
 export function PipelineNodeFooter() {
   return (
-    <div className="flex items-center justify-between gap-2 border-t border-border px-4 py-3">
+    <div className="mt-auto flex shrink-0 items-center justify-between gap-2 border-t border-border px-4 py-3">
       <Button variant="default" size="xs" className="h-6 shadow-xs" type="button">
         View & edit
       </Button>
@@ -265,6 +295,236 @@ export function PreviewErrorsRow({ count = 2 }: { count?: number }) {
       <span className="size-[10px] shrink-0 rounded-full bg-destructive" aria-hidden />
       <span className="text-xs font-bold leading-4 text-foreground">{count} errors</span>
     </div>
+  )
+}
+
+export type MedallionTier = "Bronze" | "Silver" | "Gold"
+
+const MEDALLION_TIER_ICON_CLASS: Record<MedallionTier, string> = {
+  Bronze: "text-[#b45309]",
+  Silver: "text-[#64748b]",
+  Gold: "text-[#ca8a04]",
+}
+
+/** CrowdStrike source icon — Figma slot-end style for medallion pipeline cards */
+export function CrowdStrikeSourceIcon() {
+  return (
+    <div className="shrink-0 overflow-hidden rounded-sm bg-[#fc0000] p-0.5">
+      <div className="relative size-4 overflow-hidden">
+        <img
+          src={CROWDSTRIKE_LOGO_SRC}
+          alt=""
+          className="absolute left-1/2 top-0 h-[140%] w-auto max-w-none -translate-x-1/2 object-cover object-top"
+        />
+      </div>
+    </div>
+  )
+}
+
+/** Figma 903:17796 — saved pipeline Bronze / Silver / Gold node card */
+export function SavedMedallionPipelineCard({
+  tier,
+  tableName,
+  fieldListText = SAVED_BRONZE_FIELD_LIST_TEXT,
+  sourceLabel = "Existing table",
+  showPreview = true,
+  previewLabel = "Preview available",
+  showFooter = true,
+  fieldListClassName,
+}: {
+  tier: MedallionTier
+  tableName: string
+  fieldListText?: string
+  sourceLabel?: string
+  showPreview?: boolean
+  previewLabel?: string
+  showFooter?: boolean
+  fieldListClassName?: string
+}) {
+  return (
+    <article className="relative z-[1] flex w-[280px] shrink-0 flex-col overflow-hidden rounded-lg border border-border bg-background shadow-xs">
+      <div className="flex flex-col gap-2 px-4 py-2">
+        <div className="flex items-center gap-2">
+          <div className="flex min-w-0 items-center gap-[13px]">
+            <TableIcon
+              size={16}
+              className={cn("shrink-0", MEDALLION_TIER_ICON_CLASS[tier])}
+              ariaLabel={`${tier} table`}
+            />
+            <span className="text-[13px] font-semibold leading-5 text-foreground">{tier}</span>
+          </div>
+          <span className="min-w-0 flex-1 truncate text-right text-[13px] font-semibold leading-5 text-foreground">
+            {sourceLabel}
+          </span>
+        </div>
+        <div className="h-px w-full bg-border" />
+      </div>
+
+      <div className="flex h-7 items-center px-[15px]">
+        <div className="flex items-center gap-[5px]">
+          <span className="size-[18px] shrink-0 rounded-full bg-[color:var(--success)]" aria-hidden />
+          <span className="text-xs font-bold leading-4 text-foreground">Active</span>
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-2 px-4 py-2">
+        <div className="flex items-center gap-2">
+          <span className="min-w-0 flex-1 truncate text-[13px] font-semibold leading-5 text-foreground">
+            {tableName}
+          </span>
+          <CrowdStrikeSourceIcon />
+        </div>
+        <div className="h-px w-full bg-border" />
+      </div>
+
+      <p
+        className={cn(
+          "px-[15px] pb-[19px] pt-2 text-xs leading-4 text-foreground",
+          fieldListClassName
+        )}
+      >
+        {fieldListText}
+      </p>
+
+      {showPreview ? (
+        <div className="flex items-center px-[15px] py-4">
+          <div className="flex items-center gap-[5px]">
+            <img
+              src="/lakewatch/saved-pipeline/preview-checkbox.svg"
+              alt=""
+              className="size-[18px] shrink-0"
+              aria-hidden
+            />
+            <span className="text-xs font-bold leading-4 text-foreground">{previewLabel}</span>
+          </div>
+        </div>
+      ) : null}
+
+      {showFooter ? (
+        <div className="flex h-[52px] items-center justify-between px-[15px] py-[19px]">
+          <Button variant="default" size="xs" className="h-6 shadow-xs" type="button">
+            View & edit
+          </Button>
+          <Switch size="sm" defaultChecked aria-label={`${tier} table active`} />
+        </div>
+      ) : null}
+    </article>
+  )
+}
+
+/** Figma 725:96736 — ingest detail node card (Ingest or Ingest & Bronze) */
+export function PipelineIngestDetailCard({
+  title = "Ingest & Bronze",
+  icon,
+  sourceLabel = "Existing table",
+  location,
+  fieldListText = SAVED_BRONZE_FIELD_LIST_TEXT,
+  activeLabel = "Ingest and bronze active",
+}: {
+  title?: string
+  icon?: React.ReactNode
+  sourceLabel?: string
+  location: string
+  fieldListText?: string
+  activeLabel?: string
+}) {
+  return (
+    <article className="relative z-[1] flex w-[364px] shrink-0 flex-col overflow-hidden rounded-lg border border-border bg-background shadow-xs">
+      <div className="flex flex-col gap-2 px-4 py-2">
+        <div className="flex items-center gap-2">
+          <div className="flex min-w-0 items-center gap-[13px]">
+            {icon ?? (
+              <TableIcon size={16} className="shrink-0 text-foreground" ariaLabel={title} />
+            )}
+            <span className="text-[13px] font-semibold leading-5 text-foreground">{title}</span>
+          </div>
+          <span className="min-w-0 flex-1 truncate text-right text-[13px] font-semibold leading-5 text-foreground">
+            {sourceLabel}
+          </span>
+        </div>
+        <div className="h-px w-full bg-border" />
+      </div>
+
+      <div className="flex h-7 items-center px-[15px]">
+        <div className="flex items-center gap-[5px]">
+          <span className="size-[18px] shrink-0 rounded-full bg-[color:var(--success)]" aria-hidden />
+          <span className="text-xs font-bold leading-4 text-foreground">Active</span>
+        </div>
+      </div>
+
+      <div className="h-4 shrink-0" />
+
+      <div className="flex flex-col gap-2 px-4 py-2">
+        <div className="flex items-center gap-2">
+          <span className="min-w-0 flex-1 truncate text-[13px] font-semibold leading-5 text-foreground">
+            {location}
+          </span>
+          <CrowdStrikeSourceIcon />
+        </div>
+        <div className="h-px w-full bg-border" />
+      </div>
+
+      <p className="px-[15px] pb-[19px] pt-2 text-xs leading-4 text-foreground">{fieldListText}</p>
+
+      <div className="flex items-center px-[15px] py-4">
+        <div className="flex items-center gap-[5px]">
+          <img
+            src="/lakewatch/saved-pipeline/preview-checkbox.svg"
+            alt=""
+            className="size-[18px] shrink-0"
+            aria-hidden
+          />
+          <span className="text-xs font-bold leading-4 text-foreground">Preview available</span>
+        </div>
+      </div>
+
+      <div className="flex h-[52px] items-center justify-between px-[15px] py-[19px]">
+        <Button variant="default" size="xs" className="h-6 shadow-xs" type="button">
+          View & edit
+        </Button>
+        <Switch size="sm" defaultChecked aria-label={activeLabel} />
+      </div>
+    </article>
+  )
+}
+
+/** @deprecated Use PipelineIngestDetailCard with title="Ingest & Bronze" */
+export function IngestBronzeCombinedCard({
+  sourceLabel = "Existing table",
+  location,
+  fieldListText = SAVED_BRONZE_FIELD_LIST_TEXT,
+}: {
+  sourceLabel?: string
+  location: string
+  fieldListText?: string
+}) {
+  return (
+    <PipelineIngestDetailCard
+      title="Ingest & Bronze"
+      sourceLabel={sourceLabel}
+      location={location}
+      fieldListText={fieldListText}
+    />
+  )
+}
+
+/** @deprecated Use SavedMedallionPipelineCard with tier="Bronze" */
+export function SavedBronzePipelineCard({
+  tableName = SAVED_BRONZE_TABLE_NAME,
+  fieldListText = SAVED_BRONZE_FIELD_LIST_TEXT,
+  sourceLabel = "Existing table",
+}: {
+  tableName?: string
+  fieldListText?: string
+  sourceLabel?: string
+}) {
+  return (
+    <SavedMedallionPipelineCard
+      tier="Bronze"
+      tableName={tableName}
+      fieldListText={fieldListText}
+      sourceLabel={sourceLabel}
+    />
   )
 }
 
@@ -326,13 +586,13 @@ export function PipelineTableCard({
         "relative z-[1] flex w-[280px] shrink-0 flex-col overflow-hidden rounded-lg border border-border bg-background shadow-xs",
         className
       )}
-      style={height ? { height } : undefined}
+      style={height ? { minHeight: height } : undefined}
     >
       <div className="px-4 py-2">
         <p className="truncate text-[13px] font-semibold leading-5 text-foreground">{title}</p>
         <div className="mt-2 h-px w-full bg-border" />
       </div>
-      <div className="flex min-h-0 flex-1 flex-col">{children}</div>
+      <div className="flex shrink-0 flex-col">{children}</div>
       <PipelineNodeFooter />
     </article>
   )

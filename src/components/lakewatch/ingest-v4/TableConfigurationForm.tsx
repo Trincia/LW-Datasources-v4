@@ -6,12 +6,15 @@ import { useRouter } from "next/navigation"
 import {
   CheckCircleIcon,
   ChevronDownIcon,
+  ChevronRightIcon,
   CloseIcon,
   DragIcon,
   PlusIcon,
   TrashIcon,
+  WarningFillIcon,
 } from "@/components/icons"
 import { AutoConfigureSplitButton, type AutoConfigureMenuItemId } from "@/components/lakewatch/ingest-v4/AutoConfigureSplitButton"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -26,6 +29,15 @@ import {
 } from "@/components/ui/table"
 import { Spinner } from "@/components/ui/spinner"
 import { Tree, type TreeNode } from "@/components/ui/tree"
+import {
+  CONFIGURED_PREVIEW_ROWS,
+  DEFAULT_PREVIEW_PANEL_HEIGHT,
+  MAX_PREVIEW_PANEL_HEIGHT,
+  MIN_PREVIEW_PANEL_HEIGHT,
+  type DataPreviewVariant,
+  type IngestPreviewConfig,
+  type IngestPreviewLayout,
+} from "@/components/lakewatch/ingest-v4/dataPreviewConstants"
 import { cn } from "@/lib/utils"
 
 export const AUTO_CONFIGURE_FIELD_COUNT = 7
@@ -94,37 +106,6 @@ const AUTO_CONFIGURE_VALUES = {
   schemaHints: "`Records` ARRAY<VARIANT>",
 } as const
 
-const PREVIEW_ROWS = [
-  {
-    eventTime: "2025-10-31T08:42:10Z",
-    eventData:
-      '{"user_id": "u123", "action": "login", "device": "iPhone", "ip": "73.45.221.12"} 4b2c6b9e-32e3-4a77-a7b1-8cce7a19e83a',
-  },
-  {
-    eventTime: "2025-10-31T08:44:32Z",
-    eventData:
-      '{"user_id": "u456", "action": "view_page", "page": "/pricing", "referrer": "google"} 1d4f2a1c-ed30-4b2e-b1e9-5b99c2b3a88f',
-  },
-  {
-    eventTime: "2025-10-31T08:47:12Z",
-    eventData:
-      '{"user_id": "u123", "action": "add_to_cart", "item_id": "sku-9081", "quantity": 2, "price": 39.99, 9a5e1d77-de20-4423-b8ab-120a8a53c147}',
-  },
-  {
-    eventTime: "2025-10-31T08:50:45Z",
-    eventData:
-      '{"user_id": "u789", "action": "login", "device": "Android", "ip": "104.31.66.5", 47ce9b92-22a8-4a63-9373-d5a13b7a5e93}',
-  },
-  {
-    eventTime: "2025-10-31T08:53:01Z",
-    eventData:
-      '{"user_id": "u789", "action": "view_page", "page": "/home", "referrer": "direct", 2bcb87f3-9237-4c02-8c39-ff5f1d19f8ee}',
-  },
-] as const
-
-const DEFAULT_PANEL_HEIGHT = 275
-const MIN_PANEL_HEIGHT = 160
-const MAX_PANEL_HEIGHT = 560
 
 function FieldStatusIcon({
   loading = false,
@@ -571,6 +552,8 @@ export function TableConfigurationExpanded({
   autoConfigureStep = 0,
   isAutoConfiguring = false,
   autoConfigureLabel = "Auto-configure",
+  autoConfigureMenuItems,
+  showSaveToSilverBanner = false,
 }: {
   onAutoConfigure?: () => void
   onAutoConfigureMenuSelect?: (id: AutoConfigureMenuItemId) => void
@@ -578,6 +561,8 @@ export function TableConfigurationExpanded({
   autoConfigureStep?: number
   isAutoConfiguring?: boolean
   autoConfigureLabel?: string
+  autoConfigureMenuItems?: readonly { id: AutoConfigureMenuItemId; label: string }[]
+  showSaveToSilverBanner?: boolean
 }) {
   const step = autoConfigureStep
   const {
@@ -604,14 +589,25 @@ export function TableConfigurationExpanded({
           disabled={isAutoConfiguring || allFieldsFilled}
           dropdownDisabled={isAutoConfiguring}
           menuItemDisabled={{ manual: !allManualFieldsFilled }}
+          menuItems={autoConfigureMenuItems}
           label={autoConfigureLabel}
           onAutoConfigure={onAutoConfigure}
           onMenuSelect={handleMenuSelect}
         />
       </div>
       <p className="mt-3 text-sm leading-5 text-foreground">
-        Choose to automatically handle the tasks below or you can optionally select them manually.
+        Choose to automatically handle the tasks below or you can enter them manually. Choose to
+        configure via preset or other options that are available in the menu too.
       </p>
+      {showSaveToSilverBanner ? (
+        <Alert variant="warning" className="mt-4">
+          <WarningFillIcon size={16} aria-hidden />
+          <AlertDescription className="text-foreground">
+            This data appears to be structured already. Select the Save to Silver table option if
+            you&apos;d like to save this table in its current form as a Silver table.
+          </AlertDescription>
+        </Alert>
+      ) : null}
       <div className="mt-4 space-y-4">
         <div className="grid gap-4 md:grid-cols-2">
           <div className="space-y-2">
@@ -712,7 +708,8 @@ export function BronzeTableConfiguration({
         <AutoConfigureSplitButton disabled />
       </div>
       <p className="mt-3 text-sm leading-5 text-foreground">
-        Choose to automatically handle the tasks below or you can optionally select them manually.
+        Choose to automatically handle the tasks below or you can enter them manually. Choose to
+        configure via preset or other options that are available in the menu too.
       </p>
       <div className="mt-4 space-y-4">
         <div className="grid gap-4 md:grid-cols-2">
@@ -784,34 +781,146 @@ export function BronzeTableConfiguration({
   )
 }
 
-function PreviewTableSkeleton() {
+function PreviewTableSkeleton({
+  columnCount = 2,
+  layout = "multi-column",
+}: {
+  columnCount?: number
+  layout?: IngestPreviewLayout
+}) {
   const skeletonBar = "h-2 rounded-full bg-[rgba(144,164,181,0.16)]"
+  const widths = ["w-24", "w-20", "w-28", "w-32", "w-24", "w-20", "w-28", "w-32"]
+
+  if (layout === "single-data-column") {
+    return (
+      <div className="space-y-0">
+        <div className="flex h-10 items-center border-b border-border px-2">
+          <div className={cn(skeletonBar, "w-12")} />
+        </div>
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div key={i} className="flex h-10 items-center border-b border-border">
+            <div className="flex h-10 w-8 shrink-0 items-center justify-center">
+              <div className={cn(skeletonBar, "h-2 w-2")} />
+            </div>
+            <div className={cn(skeletonBar, "ml-2 w-full max-w-[720px]")} />
+          </div>
+        ))}
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-0">
-      <div className="flex h-10 items-center border-b border-border px-2">
-        <div className={cn(skeletonBar, "w-24")} />
-        <div className={cn(skeletonBar, "ml-[180px] w-20")} />
+      <div className="flex h-10 items-center gap-4 border-b border-border px-2">
+        {Array.from({ length: columnCount }).map((_, i) => (
+          <div key={i} className={cn(skeletonBar, widths[i % widths.length])} />
+        ))}
       </div>
       {Array.from({ length: 5 }).map((_, i) => (
-        <div key={i} className="flex h-10 items-center border-b border-border px-2">
-          <div className={cn(skeletonBar, "w-[180px]")} />
-          <div className={cn(skeletonBar, "ml-4 w-full max-w-[520px]")} />
+        <div key={i} className="flex h-10 items-center gap-4 border-b border-border px-2">
+          {Array.from({ length: columnCount }).map((_, j) => (
+            <div
+              key={j}
+              className={cn(skeletonBar, j === 0 ? "w-[180px]" : "w-full max-w-[160px]")}
+            />
+          ))}
         </div>
       ))}
     </div>
   )
 }
 
-/** Figma 718:101161 — resizable bottom data preview panel */
+function SingleDataColumnIngestTable({ rows }: { rows: string[] }) {
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow className="hover:bg-transparent">
+          <TableHead className="h-10 border-b border-border px-2 text-sm font-bold text-foreground">
+            data
+          </TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {rows.map((row, rowIndex) => (
+          <TableRow key={rowIndex} className="hover:bg-transparent">
+            <TableCell className="h-10 border-b border-border p-0 py-0">
+              <div className="flex h-10 items-center">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-sm"
+                  className="h-8 w-8 shrink-0 rounded-sm"
+                  aria-label="Expand row"
+                >
+                  <ChevronRightIcon size={16} className="text-muted-foreground" />
+                </Button>
+                <span className="min-w-0 flex-1 truncate pr-2 text-sm text-foreground">{row}</span>
+              </div>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  )
+}
+
+function MultiColumnIngestTable({
+  columns,
+  rows,
+}: {
+  columns: NonNullable<IngestPreviewConfig["columns"]>
+  rows: NonNullable<IngestPreviewConfig["rows"]>
+}) {
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow className="hover:bg-transparent">
+          {columns.map((column) => (
+            <TableHead
+              key={column.id}
+              className="h-10 border-b border-border px-2 text-sm font-bold text-foreground"
+              style={{ minWidth: column.minWidth }}
+            >
+              {column.label}
+            </TableHead>
+          ))}
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {rows.map((row, rowIndex) => (
+          <TableRow key={rowIndex} className="hover:bg-transparent">
+            {columns.map((column) => (
+              <TableCell
+                key={column.id}
+                className="h-10 border-b border-border px-2 py-0 font-mono text-sm text-foreground"
+                style={{ minWidth: column.minWidth }}
+              >
+                <span className="block truncate">{row[column.id]}</span>
+              </TableCell>
+            ))}
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  )
+}
+
+/** Figma 718:101161 / 731:27617 — resizable bottom data preview panel */
 export function DataPreviewBottomPanel({
   open,
   loading = false,
-  height = DEFAULT_PANEL_HEIGHT,
+  variant = "configured",
+  ingestConfig,
+  configuredTitle = AUTO_CONFIGURE_VALUES.bronzeTableName,
+  height = DEFAULT_PREVIEW_PANEL_HEIGHT,
   onHeightChange,
   onClose,
 }: {
   open: boolean
   loading?: boolean
+  variant?: DataPreviewVariant
+  ingestConfig?: IngestPreviewConfig
+  configuredTitle?: string
   height?: number
   onHeightChange?: (height: number) => void
   onClose?: () => void
@@ -826,8 +935,8 @@ export function DataPreviewBottomPanel({
       if (!dragState.current) return
       const delta = dragState.current.startY - moveEvent.clientY
       const nextHeight = Math.min(
-        MAX_PANEL_HEIGHT,
-        Math.max(MIN_PANEL_HEIGHT, dragState.current.startHeight + delta)
+        MAX_PREVIEW_PANEL_HEIGHT,
+        Math.max(MIN_PREVIEW_PANEL_HEIGHT, dragState.current.startHeight + delta)
       )
       onHeightChange?.(nextHeight)
     }
@@ -845,6 +954,17 @@ export function DataPreviewBottomPanel({
   if (!open) return null
 
   const contentHeight = Math.max(120, height - 40)
+  const panelTitle =
+    variant === "ingest" ? (ingestConfig?.title ?? configuredTitle) : configuredTitle
+  const ingestLayout = ingestConfig?.layout ?? "multi-column"
+  const ingestColumns = ingestConfig?.columns ?? []
+  const ingestRows = ingestConfig?.rows ?? []
+  const ingestDataRows = ingestConfig?.dataRows ?? []
+  const skeletonColumnCount =
+    variant === "ingest" && ingestLayout === "multi-column"
+      ? Math.max(ingestColumns.length, 4)
+      : 2
+  const skeletonLayout = variant === "ingest" ? ingestLayout : "multi-column"
 
   return (
     <div
@@ -862,8 +982,8 @@ export function DataPreviewBottomPanel({
       </div>
 
       <div className="flex h-10 shrink-0 items-center justify-between border-b border-[#d1d9e1] bg-[#f6f7f9] px-2">
-        <p className="text-[13px] font-semibold leading-5 text-foreground">
-          {AUTO_CONFIGURE_VALUES.bronzeTableName}
+        <p className="truncate pr-4 text-[13px] font-semibold leading-5 text-foreground">
+          {panelTitle}
         </p>
         <div className="flex items-center">
           <Button type="button" variant="ghost" size="icon-sm" aria-label="Collapse preview">
@@ -877,7 +997,11 @@ export function DataPreviewBottomPanel({
 
       <div className="min-h-0 flex-1 overflow-auto bg-background" style={{ height: contentHeight }}>
         {loading ? (
-          <PreviewTableSkeleton />
+          <PreviewTableSkeleton columnCount={skeletonColumnCount} layout={skeletonLayout} />
+        ) : variant === "ingest" && ingestLayout === "single-data-column" ? (
+          <SingleDataColumnIngestTable rows={ingestDataRows} />
+        ) : variant === "ingest" ? (
+          <MultiColumnIngestTable columns={ingestColumns} rows={ingestRows} />
         ) : (
           <Table>
             <TableHeader>
@@ -891,7 +1015,7 @@ export function DataPreviewBottomPanel({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {PREVIEW_ROWS.map((row) => (
+              {CONFIGURED_PREVIEW_ROWS.map((row) => (
                 <TableRow key={row.eventTime} className="hover:bg-transparent">
                   <TableCell className="h-10 border-b border-border px-2 py-0 text-sm text-foreground">
                     {row.eventTime}

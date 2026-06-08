@@ -28,7 +28,7 @@ export function ExternalDatasourcePageChrome({
   return (
     <div className="flex flex-1 flex-col overflow-y-auto p-6 md:p-8">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div className="flex min-w-0 flex-col gap-2">
+        <div className="flex min-w-0 flex-1 flex-col gap-2">
           <IngestBreadcrumb
             items={[
               { label: "Current datasources", href: "/lakewatch/datasources" },
@@ -36,7 +36,7 @@ export function ExternalDatasourcePageChrome({
             ]}
           />
           <h1 className={PAGE_TITLE_BOLD}>
-            New external datasource
+            New cloud storage datasource
           </h1>
         </div>
         <div className="flex shrink-0 flex-col items-end gap-2">

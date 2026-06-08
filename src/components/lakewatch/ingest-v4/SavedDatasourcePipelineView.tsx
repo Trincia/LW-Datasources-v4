@@ -2,21 +2,27 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { Check, Info, Plus } from "lucide-react"
-import { ArrowInIcon, ChevronDownIcon, TableIcon } from "@/components/icons"
+import { Info, Plus } from "lucide-react"
+import { ArrowInIcon, ChevronDownIcon } from "@/components/icons"
+import { EXISTING_TABLE_LOCATION } from "@/components/lakewatch/ingest-v4/existingTableConstants"
 import {
   ActiveBadge,
-  PipelineEdgeConnector,
+  PipelineInlineEdge,
   PipelineNodeCard,
-  PreviewAvailableRow,
-  S3_CLOUDTRAIL_PATH,
+  SavedMedallionPipelineCard,
   SavedPipelineDotGrid,
   PIPELINE_CARD_WIDTH_PX,
   PIPELINE_CARD_GAP_PX,
+  PIPELINE_ADD_TRANSFORM_GAP_PX,
+  SAVED_BRONZE_FIELD_LIST_TEXT,
+  SAVED_BRONZE_TABLE_NAME,
 } from "@/components/lakewatch/ingest-v4/pipelineDagShared"
 import { AddTransformSplitButton } from "@/components/lakewatch/ingest-v4/AddTransformSplitButton"
+import {
+  DATASOURCE_PAGE_HEADER_LEFT_CLASS,
+  EditableDatasourceTitle,
+} from "@/components/lakewatch/ingest-v4/EditableDatasourceTitle"
 import { SaveDatasourceSplitButton } from "@/components/lakewatch/ingest-v4/SaveDatasourceSplitButton"
-import { PAGE_TITLE_BOLD } from "@/components/lakewatch/pageTitleStyles"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -37,7 +43,35 @@ import { SegmentedControl, SegmentedItem } from "@/components/ui/segmented-contr
 import { Switch } from "@/components/ui/switch"
 
 const INGEST_CARD_HEIGHT_PX = 198
-const BRONZE_CARD_HEIGHT_PX = 246
+
+type TransformNode = {
+  id: string
+  tier: "Silver" | "Gold"
+  tableName: string
+  configured: boolean
+}
+
+function SavedTransformCard({ node }: { node: TransformNode }) {
+  if (node.configured) {
+    return (
+      <SavedMedallionPipelineCard
+        tier={node.tier}
+        tableName={node.tableName}
+        fieldListText={SAVED_BRONZE_FIELD_LIST_TEXT}
+      />
+    )
+  }
+
+  return (
+    <SavedMedallionPipelineCard
+      tier={node.tier}
+      tableName={node.tableName}
+      fieldListText="Configure transform"
+      showPreview={false}
+      fieldListClassName="text-muted-foreground"
+    />
+  )
+}
 
 function DatasourceDetailWorkspaceActions() {
   const [viewMode, setViewMode] = React.useState("ui")
@@ -68,13 +102,43 @@ function DatasourceDetailWorkspaceActions() {
   )
 }
 
-/** Figma 731:26707 / 743:8905 — saved datasource pipeline (Ingest source + Bronze) */
+/** Figma 731:26707 — saved existing-table pipeline (CrowdStrike FDR) */
 export function SavedDatasourcePipelineView() {
+  const [transformNodes, setTransformNodes] = React.useState<TransformNode[]>([
+    {
+      id: "silver-1",
+      tier: "Silver",
+      tableName: "crowdstrike_fdr_silver_1",
+      configured: true,
+    },
+    {
+      id: "gold-1",
+      tier: "Gold",
+      tableName: "crowdstrike_fdr_gold_1",
+      configured: true,
+    },
+  ])
+  const nextTransformIdRef = React.useRef(0)
+
+  const handleAddTransform = React.useCallback(() => {
+    nextTransformIdRef.current += 1
+    const index = nextTransformIdRef.current
+    setTransformNodes((current) => [
+      ...current,
+      {
+        id: `silver-${index}`,
+        tier: "Silver",
+        tableName: "New transform",
+        configured: false,
+      },
+    ])
+  }, [])
+
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
       <div className="flex flex-1 flex-col gap-6 overflow-y-auto p-6 md:p-8">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-          <div className="flex min-w-0 flex-col gap-2">
+          <div className={DATASOURCE_PAGE_HEADER_LEFT_CLASS}>
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem>
@@ -87,7 +151,7 @@ export function SavedDatasourcePipelineView() {
                 <BreadcrumbSeparator />
               </BreadcrumbList>
             </Breadcrumb>
-            <h1 className={PAGE_TITLE_BOLD}>CloudTrail 1</h1>
+            <EditableDatasourceTitle defaultName="CrowdStrike FDR" />
           </div>
           <DatasourceDetailWorkspaceActions />
         </div>
@@ -132,51 +196,45 @@ export function SavedDatasourcePipelineView() {
 
         <div className="relative flex min-h-[420px] flex-1 flex-col overflow-hidden rounded-md border border-border bg-background shadow-[var(--shadow-db-sm)]">
           <SavedPipelineDotGrid />
-          <div className="relative z-[1] flex flex-1 items-center justify-center p-6">
+          <div className="relative z-[1] flex flex-1 items-center justify-center overflow-x-auto p-6">
             <div className="inline-flex flex-col">
-              <div className="relative inline-flex items-start">
+              <div className="inline-flex items-center">
                 <PipelineNodeCard
                   height={INGEST_CARD_HEIGHT_PX}
                   icon={<ArrowInIcon size={16} className="shrink-0 text-foreground" />}
                   title="Ingest source"
-                  subtitle="S3 Bucket"
+                  subtitle="Existing table"
                 >
                   <ActiveBadge />
-                  <div className="h-4 shrink-0" />
                   <p className="truncate px-4 pb-2 text-[13px] leading-5 text-foreground">
-                    {S3_CLOUDTRAIL_PATH}
+                    {EXISTING_TABLE_LOCATION}
                   </p>
                 </PipelineNodeCard>
 
-                <div className="ml-[45px] flex items-center gap-[50px]">
-                  <PipelineNodeCard
-                    height={BRONZE_CARD_HEIGHT_PX}
-                    icon={<TableIcon size={16} className="shrink-0 text-foreground" />}
-                    title="Bronze"
-                    subtitle="S3 Bucket"
-                  >
-                    <ActiveBadge />
-                    <div className="h-4 shrink-0" />
-                    <p className="px-4 pb-2 text-xs leading-4 text-foreground">
-                      Current field list: 27 fields added
-                    </p>
-                    <div className="flex items-center gap-1.5 px-4 py-4">
-                      <span
-                        className="flex size-[18px] shrink-0 items-center justify-center rounded border border-primary bg-primary text-primary-foreground shadow-xs"
-                        aria-hidden
-                      >
-                        <Check className="size-3.5 stroke-[2.5]" strokeLinecap="round" strokeLinejoin="round" />
-                      </span>
-                      <span className="text-xs font-bold leading-4 text-foreground">Preview available</span>
-                    </div>
-                  </PipelineNodeCard>
+                <PipelineInlineEdge width={PIPELINE_CARD_GAP_PX} />
 
-                  <AddTransformSplitButton className="w-fit shrink-0" />
-                </div>
-
-                <PipelineEdgeConnector
-                  style={{ left: PIPELINE_CARD_WIDTH_PX, width: PIPELINE_CARD_GAP_PX }}
+                <SavedMedallionPipelineCard
+                  tier="Bronze"
+                  tableName={SAVED_BRONZE_TABLE_NAME}
+                  fieldListText={SAVED_BRONZE_FIELD_LIST_TEXT}
                 />
+
+                {transformNodes.map((node) => (
+                  <React.Fragment key={node.id}>
+                    <PipelineInlineEdge width={PIPELINE_CARD_GAP_PX} />
+                    <SavedTransformCard node={node} />
+                  </React.Fragment>
+                ))}
+
+                <div
+                  className="shrink-0 self-center"
+                  style={{ marginLeft: PIPELINE_ADD_TRANSFORM_GAP_PX }}
+                >
+                  <AddTransformSplitButton
+                    className="w-fit shrink-0"
+                    onAddTransform={handleAddTransform}
+                  />
+                </div>
               </div>
 
               <div

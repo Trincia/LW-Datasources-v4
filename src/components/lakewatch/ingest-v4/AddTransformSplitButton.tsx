@@ -45,12 +45,18 @@ export const ADD_TRANSFORM_MENU_ITEMS = [
 
 export type AddTransformMenuItemId = (typeof ADD_TRANSFORM_MENU_ITEMS)[number]["id"]
 
+/** Opaque canvas button surface — avoids dot-grid bleed on semi-transparent hover tints */
+const ADD_TRANSFORM_BUTTON_SURFACE_CLASS =
+  "border-border bg-background text-muted-foreground shadow-xs hover:!bg-secondary hover:text-foreground hover:border-primary active:!bg-secondary data-[state=open]:!bg-secondary data-[state=open]:border-primary data-[state=open]:text-foreground"
+
 export function AddTransformSplitButton({
   className,
+  onAddTransform,
   onMenuSelect,
   onManagedPresetSelect,
 }: {
   className?: string
+  onAddTransform?: () => void
   onMenuSelect?: (id: AddTransformMenuItemId) => void
   onManagedPresetSelect?: (preset: NormalizationPreset) => void
 }) {
@@ -83,8 +89,9 @@ export function AddTransformSplitButton({
         <Button
           variant="default"
           size="sm"
-          className="gap-1 rounded-r-none border border-border bg-background text-muted-foreground shadow-xs"
+          className={cn("gap-1 rounded-r-none border", ADD_TRANSFORM_BUTTON_SURFACE_CLASS)}
           type="button"
+          onClick={onAddTransform}
         >
           <Plus className="size-4" aria-hidden />
           Add transform
@@ -94,7 +101,10 @@ export function AddTransformSplitButton({
             <Button
               variant="default"
               size="icon-sm"
-              className="rounded-l-none border border-l-0 border-border bg-background shadow-xs"
+              className={cn(
+                "rounded-l-none border border-l-0",
+                ADD_TRANSFORM_BUTTON_SURFACE_CLASS
+              )}
               aria-label="Add transform options"
               type="button"
             >

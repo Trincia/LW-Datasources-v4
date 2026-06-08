@@ -2,26 +2,27 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { ChevronDownIcon, Info, Plus } from "lucide-react"
-import { ArrowInIcon, TableIcon } from "@/components/icons"
-import {
-  ActiveBadge,
-  CloudTrailPresetPipelineEdges,
-  PipelineNodeCard,
-  PipelineTableCard,
-  PreviewAvailableRow,
-  PreviewErrorsRow,
-  S3_CLOUDTRAIL_PATH,
-  SavedPipelineDotGrid,
-  PIPELINE_CARD_WIDTH_PX,
-  CLOUDTRAIL_PIPELINE_LAYOUT,
-} from "@/components/lakewatch/ingest-v4/pipelineDagShared"
+import { Info, Plus } from "lucide-react"
+import { ArrowInIcon, ChevronDownIcon } from "@/components/icons"
+import { EXISTING_TABLE_LOCATION } from "@/components/lakewatch/ingest-v4/existingTableConstants"
 import { AddTransformSplitButton } from "@/components/lakewatch/ingest-v4/AddTransformSplitButton"
+import {
+  PipelineInlineEdge,
+  PipelineIngestDetailCard,
+  PIPELINE_ADD_TRANSFORM_GAP_PX,
+  PIPELINE_CARD_GAP_PX,
+  PIPELINE_CARD_WIDTH_PX,
+  SavedMedallionPipelineCard,
+  SavedPipelineDotGrid,
+  SAVED_BRONZE_FIELD_LIST_TEXT,
+  SAVED_SILVER_FIELD_LIST_TEXT,
+  SAVED_SILVER_TABLE_NAME,
+} from "@/components/lakewatch/ingest-v4/pipelineDagShared"
+import { SaveDatasourceSplitButton } from "@/components/lakewatch/ingest-v4/SaveDatasourceSplitButton"
 import {
   DATASOURCE_PAGE_HEADER_LEFT_CLASS,
   EditableDatasourceTitle,
 } from "@/components/lakewatch/ingest-v4/EditableDatasourceTitle"
-import { SaveDatasourceSplitButton } from "@/components/lakewatch/ingest-v4/SaveDatasourceSplitButton"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -40,14 +41,6 @@ import {
 } from "@/components/ui/select"
 import { SegmentedControl, SegmentedItem } from "@/components/ui/segmented-control"
 import { Switch } from "@/components/ui/switch"
-
-const INGEST_CARD_HEIGHT_PX = CLOUDTRAIL_PIPELINE_LAYOUT.ingestHeight
-const BRONZE_CARD_HEIGHT_PX = CLOUDTRAIL_PIPELINE_LAYOUT.bronzeHeight
-const INGEST_BRONZE_GAP_PX = CLOUDTRAIL_PIPELINE_LAYOUT.ingestBronzeGap
-const BRONZE_SILVER_GAP_PX = CLOUDTRAIL_PIPELINE_LAYOUT.bronzeSilverGap
-const SILVER_CARD_HEIGHT_PX = CLOUDTRAIL_PIPELINE_LAYOUT.silverHeight
-const GOLD_CARD_HEIGHT_PX = CLOUDTRAIL_PIPELINE_LAYOUT.goldHeight
-const GOLD_CARD_4_HEIGHT_PX = CLOUDTRAIL_PIPELINE_LAYOUT.gold4Height
 
 function DatasourceDetailWorkspaceActions() {
   const [viewMode, setViewMode] = React.useState("ui")
@@ -71,15 +64,15 @@ function DatasourceDetailWorkspaceActions() {
         Permissions
       </Button>
       <Button variant="default" size="sm" className="shadow-xs" asChild>
-        <Link href="/lakewatch/datasources/ingest/external">Cancel</Link>
+        <Link href="/lakewatch/datasources/ingest/existing">Cancel</Link>
       </Button>
       <SaveDatasourceSplitButton disabled={false} />
     </div>
   )
 }
 
-/** Figma 841:48115 — CloudTrail preset full medallion pipeline */
-export function CloudTrailPresetPipelineView() {
+/** Figma 725:96679 — existing table saved to silver pipeline view */
+export function SaveToSilverPipelineView() {
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
       <div className="flex flex-1 flex-col gap-6 overflow-y-auto p-6 md:p-8">
@@ -97,7 +90,7 @@ export function CloudTrailPresetPipelineView() {
                 <BreadcrumbSeparator />
               </BreadcrumbList>
             </Breadcrumb>
-            <EditableDatasourceTitle defaultName="CloudTrail 1" draft />
+            <EditableDatasourceTitle defaultName="CrowdStrike FDR" draft />
           </div>
           <DatasourceDetailWorkspaceActions />
         </div>
@@ -117,7 +110,7 @@ export function CloudTrailPresetPipelineView() {
             </Select>
             <Input
               readOnly
-              defaultValue="10"
+              defaultValue="30"
               className="h-8 w-[65px] rounded border-border text-center shadow-xs"
               aria-label="Interval value"
             />
@@ -132,7 +125,7 @@ export function CloudTrailPresetPipelineView() {
             <Info className="size-4 shrink-0 text-muted-foreground" aria-hidden />
             <div className="flex items-center gap-2">
               <span className="text-[13px] font-semibold leading-5 text-foreground">Active</span>
-              <Switch size="sm" aria-label="Schedule active" />
+              <Switch size="sm" defaultChecked aria-label="Schedule active" />
             </div>
             <Button variant="link" size="sm" className="h-8 px-2 text-primary" type="button">
               Advanced options
@@ -143,38 +136,41 @@ export function CloudTrailPresetPipelineView() {
         <div className="relative flex min-h-[560px] flex-1 flex-col overflow-hidden rounded-md border border-border bg-background shadow-[var(--shadow-db-sm)]">
           <SavedPipelineDotGrid />
           <div className="relative z-[1] flex flex-1 items-center justify-center overflow-x-auto p-6">
-            <div className="relative inline-flex items-start">
-              <CloudTrailPresetPipelineEdges />
-              <PipelineNodeCard
-                height={INGEST_CARD_HEIGHT_PX}
-                icon={<ArrowInIcon size={16} className="shrink-0 text-foreground" />}
-                title="Ingest source"
-                subtitle="S3 Bucket"
-              >
-                <ActiveBadge />
-                <div className="h-4 shrink-0" />
-                <p className="truncate px-4 pb-2 text-[13px] leading-5 text-foreground">
-                  {S3_CLOUDTRAIL_PATH}
-                </p>
-              </PipelineNodeCard>
+            <div className="inline-flex flex-col">
+              <div className="inline-flex items-center">
+                <PipelineIngestDetailCard
+                  title="Ingest"
+                  icon={<ArrowInIcon size={16} className="shrink-0 text-foreground" />}
+                  sourceLabel="Existing table"
+                  location={EXISTING_TABLE_LOCATION}
+                  fieldListText={SAVED_BRONZE_FIELD_LIST_TEXT}
+                  activeLabel="Ingest active"
+                />
+
+                <PipelineInlineEdge width={PIPELINE_CARD_GAP_PX} />
+
+                <SavedMedallionPipelineCard
+                  tier="Silver"
+                  tableName={SAVED_SILVER_TABLE_NAME}
+                  fieldListText={SAVED_SILVER_FIELD_LIST_TEXT}
+                  sourceLabel="Existing table"
+                />
+
+                <div
+                  className="shrink-0 self-center"
+                  style={{ marginLeft: PIPELINE_ADD_TRANSFORM_GAP_PX }}
+                >
+                  <AddTransformSplitButton className="w-fit shrink-0" />
+                </div>
+              </div>
 
               <div
-                className="ml-[30px] flex flex-col items-center gap-4"
-                style={{ width: PIPELINE_CARD_WIDTH_PX }}
+                className="mt-4 flex justify-center"
+                style={{
+                  marginLeft: 364 + PIPELINE_CARD_GAP_PX,
+                  width: PIPELINE_CARD_WIDTH_PX,
+                }}
               >
-                <PipelineNodeCard
-                  height={BRONZE_CARD_HEIGHT_PX}
-                  icon={<TableIcon size={16} className="shrink-0 text-foreground" />}
-                  title="Bronze"
-                  subtitle="S3 Bucket"
-                >
-                  <ActiveBadge />
-                  <div className="h-4 shrink-0" />
-                  <p className="px-4 pb-2 text-xs leading-4 text-foreground">
-                    Current field list: 27 fields added
-                  </p>
-                  <PreviewAvailableRow />
-                </PipelineNodeCard>
                 <Button
                   variant="default"
                   size="sm"
@@ -184,45 +180,6 @@ export function CloudTrailPresetPipelineView() {
                   <Plus className="size-4" aria-hidden />
                   Add enrichments
                 </Button>
-              </div>
-
-              <div className="flex flex-col gap-12" style={{ marginLeft: BRONZE_SILVER_GAP_PX }}>
-                <PipelineTableCard title="Cloud_trail_events_silver_3" height={SILVER_CARD_HEIGHT_PX}>
-                  <p className="px-4 pb-2 text-xs leading-4 text-foreground">
-                    Current field list: 37 fields added
-                  </p>
-                  <PreviewAvailableRow />
-                </PipelineTableCard>
-                <PipelineTableCard title="Cloud_trail_events_silver_4" height={SILVER_CARD_HEIGHT_PX}>
-                  <p className="px-4 pb-2 text-xs leading-4 text-foreground">
-                    Current field list: 56 fields added
-                  </p>
-                  <PreviewAvailableRow />
-                </PipelineTableCard>
-              </div>
-
-              <div className="ml-12 flex flex-col gap-4">
-                <PipelineTableCard title="Cloud_trail_events_gold_3" height={GOLD_CARD_HEIGHT_PX}>
-                  <div className="px-4 py-3">
-                    <p className="text-xs leading-4 text-foreground">Source silver table:</p>
-                    <p className="mt-1 text-[13px] font-semibold leading-5 text-foreground">Silver_table_4</p>
-                  </div>
-                  <PreviewAvailableRow />
-                </PipelineTableCard>
-                <PipelineTableCard title="Cloud_trail_events_gold_3" height={GOLD_CARD_HEIGHT_PX}>
-                  <div className="px-4 py-3">
-                    <p className="text-xs leading-4 text-foreground">Source silver table:</p>
-                    <p className="mt-1 text-[13px] font-semibold leading-5 text-foreground">Silver_table_4</p>
-                  </div>
-                  <PreviewAvailableRow />
-                </PipelineTableCard>
-                <PipelineTableCard title="Cloud_trail_events_gold_4" height={GOLD_CARD_4_HEIGHT_PX}>
-                  <p className="px-4 pb-2 text-xs leading-4 text-foreground">
-                    Current field list: 27 fields added
-                  </p>
-                  <PreviewErrorsRow />
-                </PipelineTableCard>
-                <AddTransformSplitButton className="w-fit shrink-0" />
               </div>
             </div>
           </div>

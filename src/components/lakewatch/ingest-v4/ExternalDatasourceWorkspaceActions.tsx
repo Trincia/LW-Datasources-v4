@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-/** Figma 718:104329 / 718:104309 — Lakewatch Warehouse selector */
+/** Figma 731:27728 — Lakewatch Warehouse selector */
 function LakewatchWarehouseSelector({
   value = "lakewatch-warehouse",
   onValueChange,
@@ -22,8 +22,8 @@ function LakewatchWarehouseSelector({
 }) {
   return (
     <Select value={value} onValueChange={onValueChange}>
-      <SelectTrigger className="h-9 min-w-[200px] gap-2 rounded border-border px-3 font-normal shadow-xs [&>svg:last-child]:hidden">
-        <span className="h-2 w-2 shrink-0 rounded-full bg-green-500" aria-hidden />
+      <SelectTrigger className="h-8 min-w-[240px] gap-2 rounded border-border px-3 text-[13px] font-normal shadow-xs [&>svg:last-child]:hidden">
+        <span className="size-4 shrink-0 rounded-full bg-green-500" aria-hidden />
         <SelectValue />
         <ChevronDownIcon size={16} className="ml-auto shrink-0 text-muted-foreground" />
       </SelectTrigger>
@@ -35,7 +35,7 @@ function LakewatchWarehouseSelector({
   )
 }
 
-/** Figma 718:104329–104334 / 718:104309–104314 — upper-right workspace actions */
+/** Figma 731:27728 / 731:27732 / 731:27733 — upper-right workspace actions */
 export function ExternalDatasourceWorkspaceActions({
   ingested = false,
   onSave,

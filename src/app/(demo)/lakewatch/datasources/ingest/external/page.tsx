@@ -10,11 +10,15 @@ import {
   TableConfigurationCollapsed,
 } from "@/components/lakewatch/ingest-v4/IngestDatasourceSection"
 import {
+  CONFIGURED_PREVIEW_TITLE,
+  EXTERNAL_INGEST_PREVIEW,
+} from "@/components/lakewatch/ingest-v4/dataPreviewConstants"
+import {
   DataPreviewBottomPanel,
-  PREVIEW_DATA_DELAY_MS,
   TableConfigurationExpanded,
   useAutoConfigureSequence,
 } from "@/components/lakewatch/ingest-v4/TableConfigurationForm"
+import { useIngestPreviewFlow } from "@/components/lakewatch/ingest-v4/useIngestPreviewFlow"
 
 const INGEST_NOTIFICATION_DELAY_MS = 3000
 
@@ -23,16 +27,20 @@ export default function ExternalDatasourceIngestPage() {
   const router = useRouter()
   const [ingested, setIngested] = React.useState(false)
   const [showIngestNotification, setShowIngestNotification] = React.useState(false)
-  const [previewOpen, setPreviewOpen] = React.useState(false)
-  const [previewLoading, setPreviewLoading] = React.useState(false)
-  const [previewHeight, setPreviewHeight] = React.useState(275)
   const notificationTimerRef = React.useRef<number | null>(null)
 
-  const { step, isRunning, start } = useAutoConfigureSequence(() => {
-    setPreviewOpen(true)
-    setPreviewLoading(true)
-    window.setTimeout(() => setPreviewLoading(false), PREVIEW_DATA_DELAY_MS)
-  })
+  const {
+    previewOpen,
+    previewLoading,
+    previewHeight,
+    previewVariant,
+    showIngestPreview,
+    showConfiguredPreview,
+    handleClosePreview,
+    setPreviewHeight,
+  } = useIngestPreviewFlow()
+
+  const { step, isRunning, start } = useAutoConfigureSequence(showConfiguredPreview)
 
   React.useEffect(() => {
     return () => {
@@ -44,6 +52,7 @@ export default function ExternalDatasourceIngestPage() {
 
   const handleIngest = () => {
     setIngested(true)
+    showIngestPreview()
     if (notificationTimerRef.current) {
       window.clearTimeout(notificationTimerRef.current)
     }
@@ -57,14 +66,7 @@ export default function ExternalDatasourceIngestPage() {
   }
 
   const handleManualConfigure = () => {
-    setPreviewOpen(true)
-    setPreviewLoading(true)
-    window.setTimeout(() => setPreviewLoading(false), PREVIEW_DATA_DELAY_MS)
-  }
-
-  const handleClosePreview = () => {
-    setPreviewOpen(false)
-    setPreviewLoading(false)
+    showConfiguredPreview()
   }
 
   return (
@@ -110,6 +112,9 @@ export default function ExternalDatasourceIngestPage() {
       <DataPreviewBottomPanel
         open={previewOpen}
         loading={previewLoading}
+        variant={previewVariant}
+        ingestConfig={EXTERNAL_INGEST_PREVIEW}
+        configuredTitle={CONFIGURED_PREVIEW_TITLE}
         height={previewHeight}
         onHeightChange={setPreviewHeight}
         onClose={handleClosePreview}

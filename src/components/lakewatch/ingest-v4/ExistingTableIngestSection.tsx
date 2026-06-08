@@ -4,7 +4,7 @@ import * as React from "react"
 import { CheckCircleIcon, FolderIcon } from "@/components/icons"
 import { EXISTING_TABLE_LOCATION } from "@/components/lakewatch/ingest-v4/existingTableConstants"
 import { IngestAdvancedOptionsControls } from "@/components/lakewatch/ingest-v4/IngestAdvancedOptionsModal"
-import { SelectTableModal } from "@/components/lakewatch/ingest-v4/SelectTableModal"
+import { UnityCatalogExplorerModal } from "@/components/lakewatch/ingest-v4/UnityCatalogExplorerModal"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -99,11 +99,10 @@ export function ExistingTableIngestSection({
         </div>
       </section>
 
-      <SelectTableModal
+      <UnityCatalogExplorerModal
         open={locationModalOpen}
         onOpenChange={setLocationModalOpen}
         onSelect={setDataLocation}
-        mode="existing-table"
       />
     </>
   )

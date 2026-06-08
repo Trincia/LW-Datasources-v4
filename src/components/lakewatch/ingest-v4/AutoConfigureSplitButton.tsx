@@ -16,18 +16,32 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { cn } from "@/lib/utils"
 
 export const AUTO_CONFIGURE_MENU_ITEMS = [
   { id: "normalize-preset", label: "Normalize with preset" },
   { id: "manual", label: "Configure with manual input" },
 ] as const
 
-export type AutoConfigureMenuItemId = (typeof AUTO_CONFIGURE_MENU_ITEMS)[number]["id"]
+export const SAVE_TO_SILVER_MENU_ITEM = {
+  id: "save-to-silver",
+  label: "Save to Silver table",
+} as const
+
+export type AutoConfigureMenuItemId =
+  | (typeof AUTO_CONFIGURE_MENU_ITEMS)[number]["id"]
+  | typeof SAVE_TO_SILVER_MENU_ITEM.id
+
+type AutoConfigureMenuItem = {
+  id: AutoConfigureMenuItemId
+  label: string
+}
 
 export function AutoConfigureSplitButton({
   disabled = false,
   dropdownDisabled = false,
   menuItemDisabled,
+  menuItems = AUTO_CONFIGURE_MENU_ITEMS,
   label = "Auto-configure",
   onAutoConfigure,
   onMenuSelect,
@@ -36,6 +50,7 @@ export function AutoConfigureSplitButton({
   disabled?: boolean
   dropdownDisabled?: boolean
   menuItemDisabled?: Partial<Record<AutoConfigureMenuItemId, boolean>>
+  menuItems?: readonly AutoConfigureMenuItem[]
   label?: string
   onAutoConfigure?: () => void
   onMenuSelect?: (id: AutoConfigureMenuItemId) => void
@@ -65,15 +80,22 @@ export function AutoConfigureSplitButton({
     onNormalizePresetSelect?.(preset)
   }
 
+  const effectiveDropdownDisabled = dropdownDisabled ?? disabled
+  const primaryNativeDisabled = disabled && effectiveDropdownDisabled
+  const primaryLocked = disabled && !effectiveDropdownDisabled
+
   return (
     <>
       <div className="flex shrink-0 overflow-hidden rounded shadow-xs">
         <Button
           variant="primary"
           size="sm"
-          disabled={disabled}
-          className="rounded-r-none"
-          onClick={onAutoConfigure}
+          disabled={primaryNativeDisabled}
+          className={cn(
+            "rounded-r-none",
+            primaryLocked && "pointer-events-none disabled:opacity-100"
+          )}
+          onClick={primaryLocked ? undefined : onAutoConfigure}
         >
           {label}
         </Button>
@@ -82,7 +104,7 @@ export function AutoConfigureSplitButton({
             <Button
               variant="primary"
               size="icon-sm"
-              disabled={dropdownDisabled}
+              disabled={effectiveDropdownDisabled}
               className="rounded-l-none border-l border-primary-foreground/20"
               aria-label="Auto-configure options"
             >
@@ -90,7 +112,7 @@ export function AutoConfigureSplitButton({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="min-w-[220px]">
-            {AUTO_CONFIGURE_MENU_ITEMS.map(({ id, label: itemLabel }) => (
+            {menuItems.map(({ id, label: itemLabel }) => (
               <DropdownMenuItem
                 key={id}
                 disabled={menuItemDisabled?.[id]}
