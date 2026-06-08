@@ -13,6 +13,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { Button } from "@/components/ui/button"
+import { PAGE_TITLE_SEMIBOLD } from "@/components/lakewatch/pageTitleStyles"
 import {
   Select,
   SelectContent,
@@ -182,7 +183,7 @@ export function MedallionPipelineLoading() {
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
-            <h2 className="text-2xl font-semibold leading-none tracking-tight text-foreground">
+            <h2 className={PAGE_TITLE_SEMIBOLD}>
               CloudTrail 1
             </h2>
           </div>

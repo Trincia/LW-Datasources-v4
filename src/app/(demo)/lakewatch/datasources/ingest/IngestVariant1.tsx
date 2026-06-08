@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/select"
 import { CatalogCloudIcon, TableIcon, WorkflowsIcon } from "@/components/icons"
 import { cn } from "@/lib/utils"
+import { PAGE_TITLE_SEMIBOLD } from "@/components/lakewatch/pageTitleStyles"
 
 type SourceId = "cloud" | "table" | "lakeflow"
 
@@ -68,7 +69,7 @@ export function IngestVariant1() {
               </BreadcrumbList>
             </Breadcrumb>
 
-            <h2 className="text-[24px] font-semibold leading-none tracking-tight text-foreground">
+            <h2 className={PAGE_TITLE_SEMIBOLD}>
               Ingest
             </h2>
             <h2 className="text-lg font-semibold leading-6 text-foreground">

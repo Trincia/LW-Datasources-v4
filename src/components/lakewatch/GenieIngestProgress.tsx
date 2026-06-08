@@ -13,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { PAGE_TITLE_SEMIBOLD } from "@/components/lakewatch/pageTitleStyles"
 import {
   Select,
   SelectContent,
@@ -109,7 +110,7 @@ export function GenieIngestProgress() {
                 <BreadcrumbSeparator />
               </BreadcrumbList>
             </Breadcrumb>
-            <h2 className="text-[24px] font-semibold leading-none tracking-tight text-foreground">
+            <h2 className={PAGE_TITLE_SEMIBOLD}>
               Ingest from an external location
             </h2>
           </div>

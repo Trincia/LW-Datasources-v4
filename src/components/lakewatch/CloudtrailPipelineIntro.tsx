@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { ChevronDownIcon } from "@/components/icons"
+import { PAGE_TITLE_SEMIBOLD } from "@/components/lakewatch/pageTitleStyles"
 import { cn } from "@/lib/utils"
 
 /** Figma skeleton fill — BuildingBlocks / skeleton */
@@ -107,7 +108,7 @@ export function CloudtrailPipelineIntro() {
                 <BreadcrumbSeparator />
               </BreadcrumbList>
             </Breadcrumb>
-            <h2 className="text-2xl font-semibold leading-none tracking-tight text-foreground">
+            <h2 className={PAGE_TITLE_SEMIBOLD}>
               CloudTrail 1
             </h2>
           </div>

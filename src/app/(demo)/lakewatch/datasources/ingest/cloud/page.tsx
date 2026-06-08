@@ -4,6 +4,7 @@ import * as React from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { LakewatchAppShell } from "@/components/lakewatch"
+import { PAGE_TITLE_SEMIBOLD } from "@/components/lakewatch/pageTitleStyles"
 import {
   GENIE_PRESET_ID,
   ParsingPresetModal,
@@ -84,7 +85,7 @@ export default function LakewatchIngestCloudPage() {
                 </BreadcrumbList>
               </Breadcrumb>
 
-              <h2 className="text-2xl font-semibold leading-none tracking-tight text-foreground">
+              <h2 className={PAGE_TITLE_SEMIBOLD}>
                 Ingest from an external location
               </h2>
             </div>

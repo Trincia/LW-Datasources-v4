@@ -52,3 +52,5 @@ next-env.d.ts
 !public/lakewatch/preset-logos/*.png
 # Lakewatch ingest variant 2 marketing logos (Figma MCP exports)
 !public/lakewatch/ingest-v2-logos/*.png
+# Lakewatch saved pipeline canvas assets
+!public/lakewatch/saved-pipeline/*.png

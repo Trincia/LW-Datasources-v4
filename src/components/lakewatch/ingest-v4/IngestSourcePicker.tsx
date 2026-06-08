@@ -2,10 +2,15 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { CatalogCloudIcon, TableIcon, WorkflowsIcon } from "@/components/icons"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import {
+  CloudStorageIllustration,
+  ExistingTableIllustration,
+  LakeflowConnectIllustration,
+} from "./IngestSourceIllustrations"
 import { IngestBreadcrumb, IngestWarehouseSelector } from "./IngestPageHeader"
+import { PAGE_TITLE_BOLD } from "@/components/lakewatch/pageTitleStyles"
 
 type SourceId = "cloud" | "table" | "lakeflow"
 
@@ -14,14 +19,14 @@ const SOURCE_OPTIONS: {
   title: string
   titleClassName?: string
   description: string | string[]
-  Icon: React.ComponentType<{ size?: number; className?: string }>
+  Illustration: React.ComponentType<{ className?: string }>
   href?: string
 }[] = [
   {
     id: "cloud",
     title: "Cloud storage",
     description: ["Unity Catalog external locations and", "volumes"],
-    Icon: CatalogCloudIcon,
+    Illustration: CloudStorageIllustration,
     href: "/lakewatch/datasources/ingest/external",
   },
   {
@@ -29,13 +34,14 @@ const SOURCE_OPTIONS: {
     title: "Existing table",
     titleClassName: "text-xs font-semibold leading-4",
     description: "An existing table in your workspace",
-    Icon: TableIcon,
+    Illustration: ExistingTableIllustration,
+    href: "/lakewatch/datasources/ingest/existing",
   },
   {
     id: "lakeflow",
     title: "Lakeflow connect",
     description: "Fully managed connectors for common security datasources",
-    Icon: WorkflowsIcon,
+    Illustration: LakeflowConnectIllustration,
   },
 ]
 
@@ -50,7 +56,7 @@ export function IngestSourcePicker() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex min-w-0 flex-col gap-2">
             <IngestBreadcrumb items={[{ label: "Current datasources", href: "/lakewatch/datasources" }]} />
-            <h1 className="text-2xl font-bold leading-none tracking-tight text-foreground">Ingest</h1>
+            <h1 className={PAGE_TITLE_BOLD}>Ingest</h1>
             <h2 className="text-lg font-semibold leading-6 text-foreground">
               Select source data location
             </h2>
@@ -64,7 +70,7 @@ export function IngestSourcePicker() {
         </div>
 
         <div className="flex flex-wrap justify-center gap-6 pt-2">
-          {SOURCE_OPTIONS.map(({ id, title, titleClassName, description, Icon, href }) => {
+          {SOURCE_OPTIONS.map(({ id, title, titleClassName, description, Illustration, href }) => {
             const tileClass = cn(
               "flex h-auto w-full max-w-[254px] flex-col items-stretch overflow-hidden rounded border border-border bg-background p-0 shadow-[0_3px_6px_rgba(0,0,0,0.05)]",
               "whitespace-normal hover:bg-secondary/40",
@@ -73,7 +79,7 @@ export function IngestSourcePicker() {
             const inner = (
               <>
                 <div className="flex h-[166px] w-full items-center justify-center">
-                  <Icon size={58} className="shrink-0 text-muted-foreground" />
+                  <Illustration />
                 </div>
                 <div className="flex flex-col gap-2 p-4">
                   <span

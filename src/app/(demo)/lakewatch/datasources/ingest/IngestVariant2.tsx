@@ -20,6 +20,7 @@ import {
 import { DbIcon } from "@/components/ui/db-icon"
 import { CatalogCloudIcon, GenieCodeIcon, TableIcon } from "@/components/icons"
 import { cn } from "@/lib/utils"
+import { PAGE_TITLE_SEMIBOLD } from "@/components/lakewatch/pageTitleStyles"
 
 const cardClass =
   "flex min-h-[160px] w-full max-w-[240px] flex-col items-center gap-3 rounded-[5px] border border-border bg-background p-2.5 shadow-[0_1px_3px_rgba(0,0,0,0.1),0_1px_2px_rgba(0,0,0,0.06)]"
@@ -171,7 +172,7 @@ export function IngestVariant2() {
               </BreadcrumbList>
             </Breadcrumb>
 
-            <h2 className="text-[24px] font-semibold leading-none tracking-tight text-foreground">
+            <h2 className={PAGE_TITLE_SEMIBOLD}>
               Ingest
             </h2>
           </div>

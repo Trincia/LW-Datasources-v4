@@ -11,7 +11,7 @@ import { BronzeTableConfiguration } from "@/components/lakewatch/ingest-v4/Table
 export default function ExternalDatasourceBronzePage() {
   return (
     <LakewatchAppShell activeItem="datasources" workspace="Production" userInitial="J">
-      <ExternalDatasourcePageChrome activeStep="bronze" showBronzeStep>
+      <ExternalDatasourcePageChrome activeStep="bronze" showBronzeStep ingested>
         <div className="mx-auto flex w-full max-w-[686px] flex-col gap-[18px]">
           <IngestDatasourceSection showIngestedState />
           <BronzeTableConfiguration />

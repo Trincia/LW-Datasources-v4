@@ -1,13 +1,11 @@
 "use client"
 
 import * as React from "react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
 import { CheckCircleIcon, FolderIcon } from "@/components/icons"
-import { AutoConfigureSplitButton, type AutoConfigureMenuItemId } from "@/components/lakewatch/ingest-v4/AutoConfigureSplitButton"
-import { TABLE_CONFIGURATION_EXPLAINER } from "@/components/lakewatch/ingest-v4/TableConfigurationForm"
+import { AutoConfigureSplitButton } from "@/components/lakewatch/ingest-v4/AutoConfigureSplitButton"
+import { EXISTING_TABLE_LOCATION } from "@/components/lakewatch/ingest-v4/existingTableConstants"
 import { IngestAdvancedOptionsControls } from "@/components/lakewatch/ingest-v4/IngestAdvancedOptionsModal"
-import { SelectTableModal, AWS_CLOUDTRAIL_LOCATION } from "@/components/lakewatch/ingest-v4/SelectTableModal"
+import { SelectTableModal } from "@/components/lakewatch/ingest-v4/SelectTableModal"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -30,42 +28,28 @@ function IngestSummaryField({
   )
 }
 
-/** Figma 715:54169 / 718:95869 — Ingest datasource card */
-export function IngestDatasourceSection({
-  dataLocation: dataLocationProp = "",
+/** Figma 728:24428 — ingest datasource card for existing table flow */
+export function ExistingTableIngestSection({
   onIngest,
   showIngestedState = false,
 }: {
-  dataLocation?: string
   onIngest?: () => void
   showIngestedState?: boolean
 }) {
-  const router = useRouter()
-  const [dataLocation, setDataLocation] = React.useState(dataLocationProp)
+  const [dataLocation, setDataLocation] = React.useState("")
   const [locationModalOpen, setLocationModalOpen] = React.useState(false)
 
   const fillSuggestedLocation = () => {
-    setDataLocation((current) => current || AWS_CLOUDTRAIL_LOCATION)
-  }
-
-  const handleIngest = () => {
-    setDataLocation((current) => current || AWS_CLOUDTRAIL_LOCATION)
-    if (onIngest) {
-      onIngest()
-      return
-    }
-    router.push("/lakewatch/datasources/ingest/external/configure")
+    setDataLocation((current) => current || EXISTING_TABLE_LOCATION)
   }
 
   if (showIngestedState) {
     return (
       <section className="rounded border border-border p-4">
-        <h3 className="text-lg font-normal leading-6 text-foreground">Ingest datasource</h3>
-        <div className="mt-3">
-          <IngestSummaryField
-            label="Data location"
-            value={dataLocation || AWS_CLOUDTRAIL_LOCATION}
-          />
+        <h3 className="text-lg font-semibold leading-6 text-foreground">Ingest datasource</h3>
+        <div className="mt-3 grid gap-4 md:grid-cols-[minmax(0,1fr)_auto]">
+          <IngestSummaryField label="Data location" value={dataLocation || EXISTING_TABLE_LOCATION} />
+          <IngestSummaryField label="Ingest range" value="All data" />
         </div>
       </section>
     )
@@ -74,13 +58,13 @@ export function IngestDatasourceSection({
   return (
     <>
       <section className="rounded border border-border p-4">
-        <h3 className="text-lg font-normal leading-6 text-foreground">Ingest datasource</h3>
+        <h3 className="text-lg font-semibold leading-6 text-foreground">Ingest datasource</h3>
         <div className="mt-3">
           <div className="min-w-0 space-y-2">
-            <Label htmlFor="data-location">Data location</Label>
+            <Label htmlFor="existing-table-data-location">Data location</Label>
             <div className="flex items-stretch">
               <Input
-                id="data-location"
+                id="existing-table-data-location"
                 value={dataLocation}
                 onChange={(e) => setDataLocation(e.target.value)}
                 onFocus={fillSuggestedLocation}
@@ -93,7 +77,7 @@ export function IngestDatasourceSection({
                 variant="default"
                 size="icon-sm"
                 className="rounded-l-none border border-border"
-                aria-label="Browse location"
+                aria-label="Browse tables"
                 onClick={() => setLocationModalOpen(true)}
               >
                 <FolderIcon size={16} />
@@ -103,7 +87,14 @@ export function IngestDatasourceSection({
         </div>
         <div className="mt-4 flex items-center justify-between gap-4">
           <IngestAdvancedOptionsControls />
-          <Button variant="primary" size="sm" onClick={handleIngest}>
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => {
+              setDataLocation((current) => current || EXISTING_TABLE_LOCATION)
+              onIngest?.()
+            }}
+          >
             Ingest
           </Button>
         </div>
@@ -113,55 +104,24 @@ export function IngestDatasourceSection({
         open={locationModalOpen}
         onOpenChange={setLocationModalOpen}
         onSelect={setDataLocation}
+        mode="existing-table"
       />
     </>
   )
 }
 
-export function TableConfigurationCollapsed({
+/** Figma 728:24447 — collapsed table configuration for existing table flow */
+export function ExistingTableConfigurationSection({
   enabled = false,
-  configuring = false,
-  onAutoConfigure,
-  onAutoConfigureMenuSelect,
 }: {
   enabled?: boolean
-  configuring?: boolean
-  onAutoConfigure?: () => void
-  onAutoConfigureMenuSelect?: (id: AutoConfigureMenuItemId) => void
 }) {
   return (
     <section className="rounded border border-border p-4">
       <div className="flex items-start justify-between gap-4">
         <h3 className="text-lg font-normal leading-6 text-foreground">Table configuration</h3>
-        <AutoConfigureSplitButton
-          disabled={!enabled || configuring}
-          onAutoConfigure={onAutoConfigure}
-          onMenuSelect={onAutoConfigureMenuSelect}
-        />
+        <AutoConfigureSplitButton disabled={!enabled} label="Auto-configure to bronze" />
       </div>
-      <p className="mt-3 text-sm leading-5 text-foreground">{TABLE_CONFIGURATION_EXPLAINER}</p>
     </section>
-  )
-}
-
-export function ExternalDatasourceLayout({
-  children,
-  activeStep = "ingest",
-  showBronzeStep = false,
-}: {
-  children: React.ReactNode
-  activeStep?: "ingest" | "bronze"
-  showBronzeStep?: boolean
-}) {
-  return (
-    <div className="mx-auto flex w-full max-w-[686px] flex-col gap-[18px]">{children}</div>
-  )
-}
-
-export function ExternalBackLink({ href }: { href: string }) {
-  return (
-    <Button variant="link" size="sm" className="h-auto p-0 text-primary" asChild>
-      <Link href={href}>Back</Link>
-    </Button>
   )
 }

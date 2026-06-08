@@ -13,6 +13,12 @@ const DEMO_SCREENS = [
     figma: "728:24097",
   },
   {
+    id: "existing",
+    label: "1b. Existing",
+    href: "/lakewatch/datasources/ingest/existing",
+    figma: "728:24314",
+  },
+  {
     id: "external",
     label: "2. External",
     href: "/lakewatch/datasources/ingest/external",
@@ -29,6 +35,12 @@ const DEMO_SCREENS = [
     label: "4. Bronze",
     href: "/lakewatch/datasources/ingest/external/bronze",
     figma: "718:100065",
+  },
+  {
+    id: "saved",
+    label: "5. Saved",
+    href: "/lakewatch/datasources/ingest/external/saved",
+    figma: "731:26707",
   },
 ] as const
 
