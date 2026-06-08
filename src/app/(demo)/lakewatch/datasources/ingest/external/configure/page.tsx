@@ -9,7 +9,7 @@ import { TableConfigurationExpanded } from "@/components/lakewatch/ingest-v4/Tab
 export default function ExternalDatasourceConfigurePage() {
   return (
     <LakewatchAppShell activeItem="datasources" workspace="Production" userInitial="J">
-      <ExternalDatasourcePageChrome activeStep="ingest" ingested>
+      <ExternalDatasourcePageChrome activeStep="ingest" showBronzeStep ingested>
         <div className="mx-auto flex w-full max-w-[686px] flex-col gap-[18px]">
           <IngestDatasourceSection showIngestedState />
           <TableConfigurationExpanded autoConfigureStep={7} />

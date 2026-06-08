@@ -14,6 +14,7 @@ import {
   PIPELINE_CARD_WIDTH_PX,
   PIPELINE_CARD_GAP_PX,
 } from "@/components/lakewatch/ingest-v4/pipelineDagShared"
+import { AddTransformSplitButton } from "@/components/lakewatch/ingest-v4/AddTransformSplitButton"
 import { SaveDatasourceSplitButton } from "@/components/lakewatch/ingest-v4/SaveDatasourceSplitButton"
 import { PAGE_TITLE_BOLD } from "@/components/lakewatch/pageTitleStyles"
 import {
@@ -170,15 +171,7 @@ export function SavedDatasourcePipelineView() {
                     </div>
                   </PipelineNodeCard>
 
-                  <Button
-                    variant="default"
-                    size="sm"
-                    className="w-fit shrink-0 gap-1 border border-border bg-background text-muted-foreground shadow-xs"
-                    type="button"
-                  >
-                    <Plus className="size-4" aria-hidden />
-                    Normalization
-                  </Button>
+                  <AddTransformSplitButton className="w-fit shrink-0" />
                 </div>
 
                 <PipelineEdgeConnector

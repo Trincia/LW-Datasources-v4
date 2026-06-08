@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { ChevronDownIcon, Info, Plus } from "lucide-react"
+import { ChevronDownIcon, Info } from "lucide-react"
 import { ArrowInIcon, TableIcon } from "@/components/icons"
 import {
   ActiveBadge,
@@ -15,6 +15,7 @@ import {
   SavedPipelineDotGrid,
   PIPELINE_CARD_WIDTH_PX,
 } from "@/components/lakewatch/ingest-v4/pipelineDagShared"
+import { AddTransformSplitButton } from "@/components/lakewatch/ingest-v4/AddTransformSplitButton"
 import { SaveDatasourceSplitButton } from "@/components/lakewatch/ingest-v4/SaveDatasourceSplitButton"
 import { PAGE_TITLE_BOLD } from "@/components/lakewatch/pageTitleStyles"
 import {
@@ -215,26 +216,7 @@ export function CloudTrailPresetPipelineView() {
                   </p>
                   <PreviewErrorsRow />
                 </PipelineTableCard>
-                <div className="flex overflow-hidden rounded shadow-xs">
-                  <Button
-                    variant="default"
-                    size="sm"
-                    className="gap-1 rounded-r-none border border-border bg-background shadow-xs"
-                    type="button"
-                  >
-                    <Plus className="size-4" aria-hidden />
-                    Add transform
-                  </Button>
-                  <Button
-                    variant="default"
-                    size="icon-sm"
-                    className="rounded-l-none border border-l-0 border-border"
-                    aria-label="Add transform options"
-                    type="button"
-                  >
-                    <ChevronDownIcon size={16} />
-                  </Button>
-                </div>
+                <AddTransformSplitButton className="w-fit shrink-0" />
               </div>
 
               <PipelineEdgeConnector

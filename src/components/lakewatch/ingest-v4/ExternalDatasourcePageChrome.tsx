@@ -11,12 +11,14 @@ export function ExternalDatasourcePageChrome({
   showBronzeStep = false,
   ingested = false,
   onSaveDatasource,
+  headerNotification,
   children,
 }: {
   activeStep: ExternalStep
   showBronzeStep?: boolean
   ingested?: boolean
   onSaveDatasource?: () => void
+  headerNotification?: React.ReactNode
   children: React.ReactNode
 }) {
   return (
@@ -32,9 +34,17 @@ export function ExternalDatasourcePageChrome({
           <h1 className={PAGE_TITLE_BOLD}>
             New external datasource
           </h1>
-          <ExternalDatasourceSteps activeStep={showBronzeStep ? activeStep : "ingest"} />
         </div>
-        <ExternalDatasourceWorkspaceActions ingested={ingested} onSave={onSaveDatasource} />
+        <div className="flex shrink-0 flex-col items-end gap-2">
+          <ExternalDatasourceWorkspaceActions ingested={ingested} onSave={onSaveDatasource} />
+          {headerNotification}
+        </div>
+      </div>
+      <div className="mx-auto mt-2 w-full max-w-[686px]">
+        <ExternalDatasourceSteps
+          activeStep={showBronzeStep ? activeStep : "ingest"}
+          showBronzeStep={showBronzeStep}
+        />
       </div>
       <div className="mt-6">{children}</div>
     </div>

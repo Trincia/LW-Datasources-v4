@@ -78,8 +78,15 @@ export default function ExternalDatasourceIngestPage() {
       >
         <ExternalDatasourcePageChrome
           activeStep="ingest"
+          showBronzeStep={showTableConfig || isRunning || step > 0}
           ingested={ingested}
           onSaveDatasource={() => router.push("/lakewatch/datasources/ingest/external/saved")}
+          headerNotification={
+            <IngestSuccessNotification
+              open={showIngestNotification}
+              onClose={() => setShowIngestNotification(false)}
+            />
+          }
         >
           <div className="mx-auto flex w-full max-w-[686px] flex-col gap-[18px]">
             <IngestDatasourceSection
@@ -102,16 +109,6 @@ export default function ExternalDatasourceIngestPage() {
           </div>
         </ExternalDatasourcePageChrome>
       </div>
-
-      <IngestSuccessNotification
-        open={showIngestNotification}
-        onClose={() => setShowIngestNotification(false)}
-        className="absolute z-30"
-        style={{
-          right: 24,
-          bottom: previewOpen ? previewHeight + 24 : 24,
-        }}
-      />
 
       <DataPreviewBottomPanel
         open={previewOpen}

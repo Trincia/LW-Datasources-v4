@@ -10,8 +10,7 @@ Built on the [Databricks UI Starter Kit](https://github.com/gioa/db-starter-kit)
 
 ## Live demo
 
-<!-- Update after Vercel deploy -->
-_Vercel URL pending deployment_
+**[https://lw-datasources-v4.vercel.app/lakewatch/datasources/ingest](https://lw-datasources-v4.vercel.app/lakewatch/datasources/ingest)**
 
 ## Local development
 
