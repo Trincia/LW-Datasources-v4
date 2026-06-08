@@ -6,7 +6,7 @@ import { ChevronDownIcon, Info, Plus } from "lucide-react"
 import { ArrowInIcon, TableIcon } from "@/components/icons"
 import {
   ActiveBadge,
-  PipelineEdgeConnector,
+  CloudTrailPresetPipelineEdges,
   PipelineNodeCard,
   PipelineTableCard,
   PreviewAvailableRow,
@@ -14,6 +14,7 @@ import {
   S3_CLOUDTRAIL_PATH,
   SavedPipelineDotGrid,
   PIPELINE_CARD_WIDTH_PX,
+  CLOUDTRAIL_PIPELINE_LAYOUT,
 } from "@/components/lakewatch/ingest-v4/pipelineDagShared"
 import { AddTransformSplitButton } from "@/components/lakewatch/ingest-v4/AddTransformSplitButton"
 import { SaveDatasourceSplitButton } from "@/components/lakewatch/ingest-v4/SaveDatasourceSplitButton"
@@ -37,12 +38,13 @@ import {
 import { SegmentedControl, SegmentedItem } from "@/components/ui/segmented-control"
 import { Switch } from "@/components/ui/switch"
 
-const INGEST_CARD_HEIGHT_PX = 198
-const BRONZE_CARD_HEIGHT_PX = 226
-const INGEST_BRONZE_GAP_PX = 30
-const BRONZE_SILVER_GAP_PX = 48
-const SILVER_CARD_HEIGHT_PX = 147
-const GOLD_CARD_HEIGHT_PX = 161
+const INGEST_CARD_HEIGHT_PX = CLOUDTRAIL_PIPELINE_LAYOUT.ingestHeight
+const BRONZE_CARD_HEIGHT_PX = CLOUDTRAIL_PIPELINE_LAYOUT.bronzeHeight
+const INGEST_BRONZE_GAP_PX = CLOUDTRAIL_PIPELINE_LAYOUT.ingestBronzeGap
+const BRONZE_SILVER_GAP_PX = CLOUDTRAIL_PIPELINE_LAYOUT.bronzeSilverGap
+const SILVER_CARD_HEIGHT_PX = CLOUDTRAIL_PIPELINE_LAYOUT.silverHeight
+const GOLD_CARD_HEIGHT_PX = CLOUDTRAIL_PIPELINE_LAYOUT.goldHeight
+const GOLD_CARD_4_HEIGHT_PX = CLOUDTRAIL_PIPELINE_LAYOUT.gold4Height
 
 function DatasourceDetailWorkspaceActions() {
   const [viewMode, setViewMode] = React.useState("ui")
@@ -139,6 +141,7 @@ export function CloudTrailPresetPipelineView() {
           <SavedPipelineDotGrid />
           <div className="relative z-[1] flex flex-1 items-center justify-center overflow-x-auto p-6">
             <div className="relative inline-flex items-start">
+              <CloudTrailPresetPipelineEdges />
               <PipelineNodeCard
                 height={INGEST_CARD_HEIGHT_PX}
                 icon={<ArrowInIcon size={16} className="shrink-0 text-foreground" />}
@@ -196,21 +199,21 @@ export function CloudTrailPresetPipelineView() {
               </div>
 
               <div className="ml-12 flex flex-col gap-4">
-                <PipelineTableCard title="Cloud_trail_events_gold_3">
+                <PipelineTableCard title="Cloud_trail_events_gold_3" height={GOLD_CARD_HEIGHT_PX}>
                   <div className="px-4 py-3">
                     <p className="text-xs leading-4 text-foreground">Source silver table:</p>
                     <p className="mt-1 text-[13px] font-semibold leading-5 text-foreground">Silver_table_4</p>
                   </div>
                   <PreviewAvailableRow />
                 </PipelineTableCard>
-                <PipelineTableCard title="Cloud_trail_events_gold_3">
+                <PipelineTableCard title="Cloud_trail_events_gold_3" height={GOLD_CARD_HEIGHT_PX}>
                   <div className="px-4 py-3">
                     <p className="text-xs leading-4 text-foreground">Source silver table:</p>
                     <p className="mt-1 text-[13px] font-semibold leading-5 text-foreground">Silver_table_4</p>
                   </div>
                   <PreviewAvailableRow />
                 </PipelineTableCard>
-                <PipelineTableCard title="Cloud_trail_events_gold_4" height={GOLD_CARD_HEIGHT_PX}>
+                <PipelineTableCard title="Cloud_trail_events_gold_4" height={GOLD_CARD_4_HEIGHT_PX}>
                   <p className="px-4 pb-2 text-xs leading-4 text-foreground">
                     Current field list: 27 fields added
                   </p>
@@ -218,10 +221,6 @@ export function CloudTrailPresetPipelineView() {
                 </PipelineTableCard>
                 <AddTransformSplitButton className="w-fit shrink-0" />
               </div>
-
-              <PipelineEdgeConnector
-                style={{ left: PIPELINE_CARD_WIDTH_PX, width: INGEST_BRONZE_GAP_PX }}
-              />
             </div>
           </div>
         </div>

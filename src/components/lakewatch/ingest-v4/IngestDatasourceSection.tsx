@@ -5,7 +5,6 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { CheckCircleIcon, FolderIcon } from "@/components/icons"
 import { AutoConfigureSplitButton, type AutoConfigureMenuItemId } from "@/components/lakewatch/ingest-v4/AutoConfigureSplitButton"
-import { TABLE_CONFIGURATION_EXPLAINER } from "@/components/lakewatch/ingest-v4/TableConfigurationForm"
 import { IngestAdvancedOptionsControls } from "@/components/lakewatch/ingest-v4/IngestAdvancedOptionsModal"
 import { SelectTableModal, AWS_CLOUDTRAIL_LOCATION } from "@/components/lakewatch/ingest-v4/SelectTableModal"
 import { Button } from "@/components/ui/button"
@@ -118,28 +117,29 @@ export function IngestDatasourceSection({
   )
 }
 
+/** Figma 716:7724 — title + disabled Auto-configure only (no form body) */
 export function TableConfigurationCollapsed({
-  enabled = false,
-  configuring = false,
   onAutoConfigure,
   onAutoConfigureMenuSelect,
+  autoConfigureLabel = "Auto-configure",
 }: {
   enabled?: boolean
   configuring?: boolean
   onAutoConfigure?: () => void
   onAutoConfigureMenuSelect?: (id: AutoConfigureMenuItemId) => void
+  autoConfigureLabel?: string
 }) {
   return (
     <section className="rounded border border-border p-4">
       <div className="flex items-start justify-between gap-4">
         <h3 className="text-lg font-normal leading-6 text-foreground">Table configuration</h3>
         <AutoConfigureSplitButton
-          disabled={!enabled || configuring}
+          disabled
+          label={autoConfigureLabel}
           onAutoConfigure={onAutoConfigure}
           onMenuSelect={onAutoConfigureMenuSelect}
         />
       </div>
-      <p className="mt-3 text-sm leading-5 text-foreground">{TABLE_CONFIGURATION_EXPLAINER}</p>
     </section>
   )
 }

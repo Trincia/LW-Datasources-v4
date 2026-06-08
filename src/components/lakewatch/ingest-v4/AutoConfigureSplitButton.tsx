@@ -18,21 +18,24 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 export const AUTO_CONFIGURE_MENU_ITEMS = [
-  { id: "genie", label: "Auto-configure with Genie" },
   { id: "normalize-preset", label: "Normalize with preset" },
-  { id: "manual", label: "Manual configuration" },
+  { id: "manual", label: "Configure with manual input" },
 ] as const
 
 export type AutoConfigureMenuItemId = (typeof AUTO_CONFIGURE_MENU_ITEMS)[number]["id"]
 
 export function AutoConfigureSplitButton({
   disabled = false,
+  dropdownDisabled = false,
+  menuItemDisabled,
   label = "Auto-configure",
   onAutoConfigure,
   onMenuSelect,
   onNormalizePresetSelect,
 }: {
   disabled?: boolean
+  dropdownDisabled?: boolean
+  menuItemDisabled?: Partial<Record<AutoConfigureMenuItemId, boolean>>
   label?: string
   onAutoConfigure?: () => void
   onMenuSelect?: (id: AutoConfigureMenuItemId) => void
@@ -47,10 +50,6 @@ export function AutoConfigureSplitButton({
   }, [])
 
   const handleMenuSelect = (id: AutoConfigureMenuItemId) => {
-    if (id === "genie") {
-      onAutoConfigure?.()
-      return
-    }
     if (id === "normalize-preset") {
       openPresetModal()
       return
@@ -83,7 +82,7 @@ export function AutoConfigureSplitButton({
             <Button
               variant="primary"
               size="icon-sm"
-              disabled={disabled}
+              disabled={dropdownDisabled}
               className="rounded-l-none border-l border-primary-foreground/20"
               aria-label="Auto-configure options"
             >
@@ -94,6 +93,7 @@ export function AutoConfigureSplitButton({
             {AUTO_CONFIGURE_MENU_ITEMS.map(({ id, label: itemLabel }) => (
               <DropdownMenuItem
                 key={id}
+                disabled={menuItemDisabled?.[id]}
                 onSelect={(event) => {
                   event.preventDefault()
                   handleMenuSelect(id)

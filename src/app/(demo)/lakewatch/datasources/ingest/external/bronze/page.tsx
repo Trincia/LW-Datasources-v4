@@ -12,10 +12,8 @@ export default function ExternalDatasourceBronzePage() {
   return (
     <LakewatchAppShell activeItem="datasources" workspace="Production" userInitial="J">
       <ExternalDatasourcePageChrome activeStep="bronze" showBronzeStep ingested>
-        <div className="mx-auto flex w-full max-w-[686px] flex-col gap-[18px]">
-          <IngestDatasourceSection showIngestedState />
-          <BronzeTableConfiguration />
-        </div>
+        <IngestDatasourceSection showIngestedState />
+        <BronzeTableConfiguration />
       </ExternalDatasourcePageChrome>
     </LakewatchAppShell>
   )

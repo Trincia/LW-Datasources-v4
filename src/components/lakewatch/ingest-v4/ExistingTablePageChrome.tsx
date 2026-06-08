@@ -1,11 +1,12 @@
 "use client"
 
 import * as React from "react"
-import Link from "next/link"
-import { ArrowInIcon } from "@/components/icons"
+import {
+  INGEST_FLOW_CONTENT_CLASS,
+  IngestSourceStepLink,
+} from "@/components/lakewatch/ingest-v4/ExternalDatasourceSteps"
 import { IngestBreadcrumb, IngestWarehouseSelector } from "@/components/lakewatch/ingest-v4/IngestPageHeader"
 import { PAGE_TITLE_BOLD } from "@/components/lakewatch/pageTitleStyles"
-import { cn } from "@/lib/utils"
 
 /** Figma 728:24314 — page chrome for existing-table ingest */
 export function ExistingTablePageChrome({
@@ -26,22 +27,17 @@ export function ExistingTablePageChrome({
             ]}
           />
           <h1 className={PAGE_TITLE_BOLD}>New datasource from existing table</h1>
-          <Link
-            href="/lakewatch/datasources/ingest/existing"
-            className={cn(
-              "inline-flex h-[34px] w-fit items-center gap-3 rounded border border-border",
-              "bg-background px-4 py-2 text-sm font-semibold text-foreground shadow-xs"
-            )}
-          >
-            <ArrowInIcon size={16} className="shrink-0 text-foreground" />
-            Ingest source
-          </Link>
         </div>
         <div className="shrink-0 sm:pt-1">
           <IngestWarehouseSelector value={warehouse} onValueChange={setWarehouse} />
         </div>
       </div>
-      <div className="mt-6">{children}</div>
+      <div className="mt-6">
+        <div className={INGEST_FLOW_CONTENT_CLASS}>
+          <IngestSourceStepLink href="/lakewatch/datasources/ingest/existing" />
+          {children}
+        </div>
+      </div>
     </div>
   )
 }

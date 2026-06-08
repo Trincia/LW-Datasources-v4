@@ -1,7 +1,11 @@
 "use client"
 
 import * as React from "react"
-import { ExternalDatasourceSteps, type ExternalStep } from "./ExternalDatasourceSteps"
+import {
+  ExternalDatasourceSteps,
+  INGEST_FLOW_CONTENT_CLASS,
+  type ExternalStep,
+} from "./ExternalDatasourceSteps"
 import { ExternalDatasourceWorkspaceActions } from "./ExternalDatasourceWorkspaceActions"
 import { IngestBreadcrumb } from "./IngestPageHeader"
 import { PAGE_TITLE_BOLD } from "@/components/lakewatch/pageTitleStyles"
@@ -40,13 +44,15 @@ export function ExternalDatasourcePageChrome({
           {headerNotification}
         </div>
       </div>
-      <div className="mx-auto mt-2 w-full max-w-[686px]">
-        <ExternalDatasourceSteps
-          activeStep={showBronzeStep ? activeStep : "ingest"}
-          showBronzeStep={showBronzeStep}
-        />
+      <div className="mt-6">
+        <div className={INGEST_FLOW_CONTENT_CLASS}>
+          <ExternalDatasourceSteps
+            activeStep={showBronzeStep ? activeStep : "ingest"}
+            showBronzeStep={showBronzeStep}
+          />
+          {children}
+        </div>
       </div>
-      <div className="mt-6">{children}</div>
     </div>
   )
 }

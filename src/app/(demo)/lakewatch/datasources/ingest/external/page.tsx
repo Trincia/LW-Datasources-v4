@@ -23,13 +23,14 @@ export default function ExternalDatasourceIngestPage() {
   const router = useRouter()
   const [ingested, setIngested] = React.useState(false)
   const [showIngestNotification, setShowIngestNotification] = React.useState(false)
-  const [showTableConfig, setShowTableConfig] = React.useState(false)
   const [previewOpen, setPreviewOpen] = React.useState(false)
   const [previewLoading, setPreviewLoading] = React.useState(false)
   const [previewHeight, setPreviewHeight] = React.useState(275)
   const notificationTimerRef = React.useRef<number | null>(null)
 
-  const { step, isRunning, start, reset } = useAutoConfigureSequence(() => {
+  const { step, isRunning, start } = useAutoConfigureSequence(() => {
+    setPreviewOpen(true)
+    setPreviewLoading(true)
     window.setTimeout(() => setPreviewLoading(false), PREVIEW_DATA_DELAY_MS)
   })
 
@@ -52,17 +53,18 @@ export default function ExternalDatasourceIngestPage() {
   }
 
   const handleAutoConfigure = () => {
-    setShowTableConfig(true)
+    start()
+  }
+
+  const handleManualConfigure = () => {
     setPreviewOpen(true)
     setPreviewLoading(true)
-    start()
+    window.setTimeout(() => setPreviewLoading(false), PREVIEW_DATA_DELAY_MS)
   }
 
   const handleClosePreview = () => {
     setPreviewOpen(false)
     setPreviewLoading(false)
-    reset()
-    setShowTableConfig(false)
   }
 
   return (
@@ -78,7 +80,7 @@ export default function ExternalDatasourceIngestPage() {
       >
         <ExternalDatasourcePageChrome
           activeStep="ingest"
-          showBronzeStep={showTableConfig || isRunning || step > 0}
+          showBronzeStep={isRunning || step > 0 || previewOpen}
           ingested={ingested}
           onSaveDatasource={() => router.push("/lakewatch/datasources/ingest/external/saved")}
           headerNotification={
@@ -88,25 +90,20 @@ export default function ExternalDatasourceIngestPage() {
             />
           }
         >
-          <div className="mx-auto flex w-full max-w-[686px] flex-col gap-[18px]">
-            <IngestDatasourceSection
-              showIngestedState={ingested}
-              onIngest={handleIngest}
+          <IngestDatasourceSection
+            showIngestedState={ingested}
+            onIngest={handleIngest}
+          />
+          {ingested ? (
+            <TableConfigurationExpanded
+              autoConfigureStep={step}
+              isAutoConfiguring={isRunning}
+              onAutoConfigure={handleAutoConfigure}
+              onManualConfigure={handleManualConfigure}
             />
-            {showTableConfig ? (
-              <TableConfigurationExpanded
-                autoConfigureStep={step}
-                isAutoConfiguring={isRunning || step > 0}
-                onAutoConfigure={handleAutoConfigure}
-              />
-            ) : (
-              <TableConfigurationCollapsed
-                enabled={ingested}
-                configuring={isRunning}
-                onAutoConfigure={handleAutoConfigure}
-              />
-            )}
-          </div>
+          ) : (
+            <TableConfigurationCollapsed />
+          )}
         </ExternalDatasourcePageChrome>
       </div>
 

@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import { CheckCircleIcon, FolderIcon } from "@/components/icons"
-import { AutoConfigureSplitButton } from "@/components/lakewatch/ingest-v4/AutoConfigureSplitButton"
 import { EXISTING_TABLE_LOCATION } from "@/components/lakewatch/ingest-v4/existingTableConstants"
 import { IngestAdvancedOptionsControls } from "@/components/lakewatch/ingest-v4/IngestAdvancedOptionsModal"
 import { SelectTableModal } from "@/components/lakewatch/ingest-v4/SelectTableModal"
@@ -46,7 +45,7 @@ export function ExistingTableIngestSection({
   if (showIngestedState) {
     return (
       <section className="rounded border border-border p-4">
-        <h3 className="text-lg font-semibold leading-6 text-foreground">Ingest datasource</h3>
+        <h3 className="text-lg font-normal leading-6 text-foreground">Ingest datasource</h3>
         <div className="mt-3 grid gap-4 md:grid-cols-[minmax(0,1fr)_auto]">
           <IngestSummaryField label="Data location" value={dataLocation || EXISTING_TABLE_LOCATION} />
           <IngestSummaryField label="Ingest range" value="All data" />
@@ -58,7 +57,7 @@ export function ExistingTableIngestSection({
   return (
     <>
       <section className="rounded border border-border p-4">
-        <h3 className="text-lg font-semibold leading-6 text-foreground">Ingest datasource</h3>
+        <h3 className="text-lg font-normal leading-6 text-foreground">Ingest datasource</h3>
         <div className="mt-3">
           <div className="min-w-0 space-y-2">
             <Label htmlFor="existing-table-data-location">Data location</Label>
@@ -107,21 +106,5 @@ export function ExistingTableIngestSection({
         mode="existing-table"
       />
     </>
-  )
-}
-
-/** Figma 728:24447 — collapsed table configuration for existing table flow */
-export function ExistingTableConfigurationSection({
-  enabled = false,
-}: {
-  enabled?: boolean
-}) {
-  return (
-    <section className="rounded border border-border p-4">
-      <div className="flex items-start justify-between gap-4">
-        <h3 className="text-lg font-normal leading-6 text-foreground">Table configuration</h3>
-        <AutoConfigureSplitButton disabled={!enabled} label="Auto-configure to bronze" />
-      </div>
-    </section>
   )
 }
