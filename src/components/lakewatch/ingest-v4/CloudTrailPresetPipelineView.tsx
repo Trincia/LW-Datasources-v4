@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { ChevronDownIcon, Info } from "lucide-react"
+import { ChevronDownIcon, Info, Plus } from "lucide-react"
 import { ArrowInIcon, TableIcon } from "@/components/icons"
 import {
   ActiveBadge,
