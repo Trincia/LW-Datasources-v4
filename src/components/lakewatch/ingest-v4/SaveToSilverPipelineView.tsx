@@ -1,7 +1,6 @@
 "use client"
 
-import * as React from "react"
-import { Info, Plus } from "lucide-react"
+import { Plus } from "lucide-react"
 import { ArrowInIcon } from "@/components/icons"
 import { EXISTING_TABLE_LOCATION } from "@/components/lakewatch/ingest-v4/existingTableConstants"
 import { AddTransformSplitButton } from "@/components/lakewatch/ingest-v4/AddTransformSplitButton"
@@ -12,124 +11,91 @@ import {
   PIPELINE_CARD_GAP_PX,
   PIPELINE_CARD_WIDTH_PX,
   SavedMedallionPipelineCard,
-  SavedPipelineDotGrid,
+  SavedPipelineCanvas,
   SAVED_BRONZE_FIELD_LIST_TEXT,
   SAVED_SILVER_FIELD_LIST_TEXT,
   SAVED_SILVER_TABLE_NAME,
 } from "@/components/lakewatch/ingest-v4/pipelineDagShared"
 import { SavedDatasourcePageHeader } from "@/components/lakewatch/ingest-v4/SavedDatasourcePageHeader"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { SavedPipelineProcessingSchedule } from "@/components/lakewatch/ingest-v4/SavedPipelineProcessingSchedule"
+import { EXISTING_SAVE_TO_SILVER_PREVIEW_PROFILES } from "@/components/lakewatch/ingest-v4/savedPipelinePreviewProfiles"
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { Switch } from "@/components/ui/switch"
+  SavedPipelinePageShell,
+  useSavedPipelineCardFocus,
+} from "@/components/lakewatch/ingest-v4/useSavedPipelineCardFocus"
+import { Button } from "@/components/ui/button"
 
 /** Figma 725:96679 — existing table saved to silver pipeline view */
 export function SaveToSilverPipelineView() {
+  const focus = useSavedPipelineCardFocus({
+    availableTiers: ["ingest", "silver"],
+    previews: EXISTING_SAVE_TO_SILVER_PREVIEW_PROFILES,
+  })
+
   return (
-    <div className="flex flex-1 flex-col overflow-hidden">
-      <div className="flex flex-1 flex-col gap-6 overflow-y-auto p-6 md:p-8">
+    <SavedPipelinePageShell
+      focus={focus}
+      header={
         <SavedDatasourcePageHeader
           defaultName="CrowdStrike FDR"
           draft
           cancelHref="/lakewatch/datasources/ingest/existing"
         />
+      }
+      schedule={<SavedPipelineProcessingSchedule interval="30" scheduleActive />}
+    >
+      <SavedPipelineCanvas>
+        <div className="inline-flex flex-col">
+            <div className="inline-flex items-center">
+              <PipelineIngestDetailCard
+                title="Ingest"
+                icon={<ArrowInIcon size={16} className="shrink-0 text-foreground" />}
+                sourceLabel="Existing table"
+                location={EXISTING_TABLE_LOCATION}
+                fieldListText={SAVED_BRONZE_FIELD_LIST_TEXT}
+                activeLabel="Ingest active"
+                focused={focus.isFocused("ingest")}
+                onFocusSelect={() => focus.selectTier("ingest")}
+              />
 
-        <div className="rounded-md border border-border bg-background px-4 py-3 shadow-[var(--shadow-db-sm)]">
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="text-[13px] font-semibold leading-5 text-foreground">
-              Processing schedule
-            </span>
-            <Select defaultValue="at-least">
-              <SelectTrigger className="h-8 w-[151px] rounded border-border shadow-xs">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="at-least">At least every</SelectItem>
-              </SelectContent>
-            </Select>
-            <Input
-              readOnly
-              defaultValue="30"
-              className="h-8 w-[65px] rounded border-border text-center shadow-xs"
-              aria-label="Interval value"
-            />
-            <Select defaultValue="minutes">
-              <SelectTrigger className="h-8 w-[151px] rounded border-border shadow-xs">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="minutes">Minutes</SelectItem>
-              </SelectContent>
-            </Select>
-            <Info className="size-4 shrink-0 text-muted-foreground" aria-hidden />
-            <div className="flex items-center gap-2">
-              <span className="text-[13px] font-semibold leading-5 text-foreground">Active</span>
-              <Switch size="sm" defaultChecked aria-label="Schedule active" />
-            </div>
-            <Button variant="link" size="sm" className="h-8 px-2 text-primary" type="button">
-              Advanced options
-            </Button>
-          </div>
-        </div>
+              <PipelineInlineEdge width={PIPELINE_CARD_GAP_PX} />
 
-        <div className="relative flex min-h-[560px] flex-1 flex-col overflow-hidden rounded-md border border-border bg-background shadow-[var(--shadow-db-sm)]">
-          <SavedPipelineDotGrid />
-          <div className="relative z-[1] flex flex-1 items-center justify-center overflow-x-auto p-6">
-            <div className="inline-flex flex-col">
-              <div className="inline-flex items-center">
-                <PipelineIngestDetailCard
-                  title="Ingest"
-                  icon={<ArrowInIcon size={16} className="shrink-0 text-foreground" />}
-                  sourceLabel="Existing table"
-                  location={EXISTING_TABLE_LOCATION}
-                  fieldListText={SAVED_BRONZE_FIELD_LIST_TEXT}
-                  activeLabel="Ingest active"
-                />
-
-                <PipelineInlineEdge width={PIPELINE_CARD_GAP_PX} />
-
-                <SavedMedallionPipelineCard
-                  tier="Silver"
-                  tableName={SAVED_SILVER_TABLE_NAME}
-                  fieldListText={SAVED_SILVER_FIELD_LIST_TEXT}
-                  sourceLabel="Existing table"
-                />
-
-                <div
-                  className="shrink-0 self-center"
-                  style={{ marginLeft: PIPELINE_ADD_TRANSFORM_GAP_PX }}
-                >
-                  <AddTransformSplitButton className="w-fit shrink-0" />
-                </div>
-              </div>
+              <SavedMedallionPipelineCard
+                tier="Silver"
+                tableName={SAVED_SILVER_TABLE_NAME}
+                fieldListText={SAVED_SILVER_FIELD_LIST_TEXT}
+                sourceLabel="Existing table"
+                focused={focus.isFocused("silver")}
+                onFocusSelect={() => focus.selectTier("silver")}
+              />
 
               <div
-                className="mt-4 flex justify-center"
-                style={{
-                  marginLeft: 364 + PIPELINE_CARD_GAP_PX,
-                  width: PIPELINE_CARD_WIDTH_PX,
-                }}
+                className="shrink-0 self-center"
+                style={{ marginLeft: PIPELINE_ADD_TRANSFORM_GAP_PX }}
               >
-                <Button
-                  variant="default"
-                  size="sm"
-                  className="w-fit gap-1 border border-border bg-background text-muted-foreground shadow-xs"
-                  type="button"
-                >
-                  <Plus className="size-4" aria-hidden />
-                  Add enrichments
-                </Button>
+                <AddTransformSplitButton className="w-fit shrink-0" />
               </div>
             </div>
-          </div>
+
+            <div
+              className="mt-4 flex justify-center"
+              style={{
+                marginLeft: 364 + PIPELINE_CARD_GAP_PX,
+                width: PIPELINE_CARD_WIDTH_PX,
+              }}
+            >
+              <Button
+                variant="default"
+                size="sm"
+                className="w-fit gap-1 border border-border bg-background text-muted-foreground shadow-xs"
+                type="button"
+              >
+                <Plus className="size-4" aria-hidden />
+                Add enrichments
+              </Button>
+            </div>
         </div>
-      </div>
-    </div>
+      </SavedPipelineCanvas>
+    </SavedPipelinePageShell>
   )
 }

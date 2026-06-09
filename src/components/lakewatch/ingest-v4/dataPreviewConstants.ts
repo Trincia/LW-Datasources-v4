@@ -116,6 +116,10 @@ export const EXTERNAL_INGEST_PREVIEW: IngestPreviewConfig = {
 export const CONFIGURED_PREVIEW_TITLE = "aws_cloudtrail_1"
 export const EXISTING_CONFIGURED_PREVIEW_TITLE = "crowdstrike_fdr_bronze"
 
+/** Figma 903:16505 — bronze preview panel title (cloud storage) */
+export const BRONZE_CLOUD_STORAGE_PREVIEW_TITLE = "aws_sec_lake_bronze"
+export const BRONZE_EXISTING_TABLE_PREVIEW_TITLE = EXISTING_CONFIGURED_PREVIEW_TITLE
+
 export const CONFIGURED_PREVIEW_ROWS = [
   {
     eventTime: "2025-10-31T08:42:10Z",

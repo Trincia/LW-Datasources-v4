@@ -23,6 +23,33 @@ export const CLOUD_STORAGE_CONFIGURED_SAVED_HREF =
 export const PIPELINE_ADD_TRANSFORM_GAP_PX = 40
 export const PIPELINE_EDGE_STROKE = "#445461"
 
+export const PIPELINE_CARD_FOCUS_RING_CLASS = "z-[2] border-primary ring-2 ring-primary"
+
+type PipelineCardFocusProps = {
+  focused?: boolean
+  onFocusSelect?: () => void
+}
+
+function pipelineCardFocusHandlers({ focused, onFocusSelect }: PipelineCardFocusProps) {
+  return {
+    className: cn(
+      focused && PIPELINE_CARD_FOCUS_RING_CLASS,
+      onFocusSelect && "cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-primary"
+    ),
+    onClick: onFocusSelect,
+    onKeyDown: onFocusSelect
+      ? (event: React.KeyboardEvent) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault()
+            onFocusSelect()
+          }
+        }
+      : undefined,
+    role: onFocusSelect ? ("button" as const) : undefined,
+    tabIndex: onFocusSelect ? 0 : undefined,
+  }
+}
+
 export const CLOUDTRAIL_PIPELINE_LAYOUT = {
   cardWidth: 280,
   ingestHeight: 198,
@@ -77,6 +104,18 @@ export function SavedPipelineDotGrid() {
           backgroundPosition: "top left",
         }}
       />
+    </div>
+  )
+}
+
+/** Dot-grid canvas — cards stay centered in the visible area above the preview drawer */
+export function SavedPipelineCanvas({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-md border border-border bg-background shadow-[var(--shadow-db-sm)]">
+      <SavedPipelineDotGrid />
+      <div className="relative z-[1] flex min-h-0 flex-1 items-center justify-center overflow-auto p-6">
+        {children}
+      </div>
     </div>
   )
 }
@@ -336,6 +375,8 @@ export function SavedMedallionPipelineCard({
   previewLabel = "Preview available",
   showFooter = true,
   fieldListClassName,
+  focused,
+  onFocusSelect,
 }: {
   tier: MedallionTier
   tableName: string
@@ -345,9 +386,22 @@ export function SavedMedallionPipelineCard({
   previewLabel?: string
   showFooter?: boolean
   fieldListClassName?: string
+  focused?: boolean
+  onFocusSelect?: () => void
 }) {
+  const focusProps = pipelineCardFocusHandlers({ focused, onFocusSelect })
+
   return (
-    <article className="relative z-[1] flex w-[280px] shrink-0 flex-col overflow-hidden rounded-lg border border-border bg-background shadow-xs">
+    <article
+      className={cn(
+        "relative z-[1] flex w-[280px] shrink-0 flex-col overflow-hidden rounded-lg border border-border bg-background shadow-xs",
+        focusProps.className
+      )}
+      onClick={focusProps.onClick}
+      onKeyDown={focusProps.onKeyDown}
+      role={focusProps.role}
+      tabIndex={focusProps.tabIndex}
+    >
       <div className="flex flex-col gap-2 px-4 py-2">
         <div className="flex items-center gap-2">
           <div className="flex min-w-0 items-center gap-[13px]">
@@ -425,6 +479,8 @@ export function PipelineIngestDetailCard({
   location,
   fieldListText = SAVED_BRONZE_FIELD_LIST_TEXT,
   activeLabel = "Ingest and bronze active",
+  focused,
+  onFocusSelect,
 }: {
   title?: string
   icon?: React.ReactNode
@@ -432,9 +488,22 @@ export function PipelineIngestDetailCard({
   location: string
   fieldListText?: string
   activeLabel?: string
+  focused?: boolean
+  onFocusSelect?: () => void
 }) {
+  const focusProps = pipelineCardFocusHandlers({ focused, onFocusSelect })
+
   return (
-    <article className="relative z-[1] flex w-[364px] shrink-0 flex-col overflow-hidden rounded-lg border border-border bg-background shadow-xs">
+    <article
+      className={cn(
+        "relative z-[1] flex w-[364px] shrink-0 flex-col overflow-hidden rounded-lg border border-border bg-background shadow-xs",
+        focusProps.className
+      )}
+      onClick={focusProps.onClick}
+      onKeyDown={focusProps.onKeyDown}
+      role={focusProps.role}
+      tabIndex={focusProps.tabIndex}
+    >
       <div className="flex flex-col gap-2 px-4 py-2">
         <div className="flex items-center gap-2">
           <div className="flex min-w-0 items-center gap-[13px]">
@@ -541,6 +610,8 @@ export function PipelineNodeCard({
   className,
   height,
   width = PIPELINE_CARD_WIDTH_PX,
+  focused,
+  onFocusSelect,
 }: {
   icon?: React.ReactNode
   title: string
@@ -549,17 +620,26 @@ export function PipelineNodeCard({
   className?: string
   height?: number
   width?: number
+  focused?: boolean
+  onFocusSelect?: () => void
 }) {
+  const focusProps = pipelineCardFocusHandlers({ focused, onFocusSelect })
+
   return (
     <article
       className={cn(
         "relative z-[1] flex shrink-0 flex-col overflow-hidden rounded-lg border border-border bg-background shadow-xs",
+        focusProps.className,
         className
       )}
       style={{
         width,
         ...(height ? { height } : {}),
       }}
+      onClick={focusProps.onClick}
+      onKeyDown={focusProps.onKeyDown}
+      role={focusProps.role}
+      tabIndex={focusProps.tabIndex}
     >
       <div className="flex flex-col gap-2 px-4 py-2">
         <div className="flex items-center gap-2">
@@ -584,19 +664,30 @@ export function PipelineTableCard({
   children,
   className,
   height,
+  focused,
+  onFocusSelect,
 }: {
   title: string
   children: React.ReactNode
   className?: string
   height?: number
+  focused?: boolean
+  onFocusSelect?: () => void
 }) {
+  const focusProps = pipelineCardFocusHandlers({ focused, onFocusSelect })
+
   return (
     <article
       className={cn(
         "relative z-[1] flex w-[280px] shrink-0 flex-col overflow-hidden rounded-lg border border-border bg-background shadow-xs",
+        focusProps.className,
         className
       )}
       style={height ? { minHeight: height } : undefined}
+      onClick={focusProps.onClick}
+      onKeyDown={focusProps.onKeyDown}
+      role={focusProps.role}
+      tabIndex={focusProps.tabIndex}
     >
       <div className="px-4 py-2">
         <p className="truncate text-[13px] font-semibold leading-5 text-foreground">{title}</p>

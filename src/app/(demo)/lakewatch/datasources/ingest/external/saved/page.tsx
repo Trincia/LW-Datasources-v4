@@ -10,7 +10,7 @@ export default function SavedDatasourcePage() {
       activeItem="datasources"
       workspace="Production"
       userInitial="J"
-      mainClassName="flex flex-col overflow-hidden"
+      mainClassName="relative flex flex-col overflow-hidden"
     >
       <CloudStorageIngestSavedPipelineView />
     </LakewatchAppShell>

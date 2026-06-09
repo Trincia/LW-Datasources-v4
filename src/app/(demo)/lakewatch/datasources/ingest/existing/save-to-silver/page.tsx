@@ -10,7 +10,7 @@ export default function ExistingSaveToSilverPage() {
       activeItem="datasources"
       workspace="Production"
       userInitial="J"
-      mainClassName="flex flex-col overflow-hidden"
+      mainClassName="relative flex flex-col overflow-hidden"
     >
       <SaveToSilverPipelineView />
     </LakewatchAppShell>

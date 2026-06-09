@@ -1,125 +1,89 @@
 "use client"
 
-import * as React from "react"
-import { Info, Plus } from "lucide-react"
+import { Plus } from "lucide-react"
 import { ArrowInIcon } from "@/components/icons"
 import {
   ActiveBadge,
   PipelineNodeCard,
   PreviewAvailableRow,
   S3_CLOUDTRAIL_PATH,
-  SavedPipelineDotGrid,
+  SavedPipelineCanvas,
   SAVED_BRONZE_FIELD_LIST_TEXT,
   PIPELINE_CARD_WIDTH_PX,
 } from "@/components/lakewatch/ingest-v4/pipelineDagShared"
 import { SavedDatasourcePageHeader } from "@/components/lakewatch/ingest-v4/SavedDatasourcePageHeader"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { SavedPipelineProcessingSchedule } from "@/components/lakewatch/ingest-v4/SavedPipelineProcessingSchedule"
+import { CLOUD_STORAGE_INGEST_ONLY_PREVIEW_PROFILES } from "@/components/lakewatch/ingest-v4/savedPipelinePreviewProfiles"
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { Switch } from "@/components/ui/switch"
+  SavedPipelinePageShell,
+  useSavedPipelineCardFocus,
+} from "@/components/lakewatch/ingest-v4/useSavedPipelineCardFocus"
+import { Button } from "@/components/ui/button"
 
 /** Figma 903:16972 — cloud storage saved after ingest-only (no auto-configure) */
 export function CloudStorageIngestSavedPipelineView() {
+  const focus = useSavedPipelineCardFocus({
+    availableTiers: ["ingest"],
+    previews: CLOUD_STORAGE_INGEST_ONLY_PREVIEW_PROFILES,
+  })
+
   return (
-    <div className="flex flex-1 flex-col overflow-hidden">
-      <div className="flex flex-1 flex-col gap-6 overflow-y-auto p-6 md:p-8">
+    <SavedPipelinePageShell
+      focus={focus}
+      header={
         <SavedDatasourcePageHeader
           defaultName="CloudTrail 1"
           draft
           cancelHref="/lakewatch/datasources/ingest/external"
         />
+      }
+      schedule={<SavedPipelineProcessingSchedule />}
+    >
+      <SavedPipelineCanvas>
+        <div className="inline-flex flex-col">
+            <div className="inline-flex items-center gap-3">
+              <PipelineNodeCard
+                icon={<ArrowInIcon size={16} className="shrink-0 text-foreground" />}
+                title="Ingest source"
+                subtitle="S3 Bucket"
+                focused={focus.isFocused("ingest")}
+                onFocusSelect={() => focus.selectTier("ingest")}
+              >
+                <ActiveBadge />
+                <div className="h-4 shrink-0" />
+                <p className="truncate px-4 pb-2 text-[13px] leading-5 text-foreground">
+                  {S3_CLOUDTRAIL_PATH}
+                </p>
+                <p className="px-4 pb-2 text-xs leading-4 text-foreground">
+                  {SAVED_BRONZE_FIELD_LIST_TEXT}
+                </p>
+                <PreviewAvailableRow />
+              </PipelineNodeCard>
 
-        <div className="rounded-md border border-border bg-background px-4 py-3 shadow-[var(--shadow-db-sm)]">
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="text-[13px] font-semibold leading-5 text-foreground">
-              Processing schedule
-            </span>
-            <Select defaultValue="at-least">
-              <SelectTrigger className="h-8 w-[151px] rounded border-border shadow-xs">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="at-least">At least every</SelectItem>
-              </SelectContent>
-            </Select>
-            <Input
-              readOnly
-              defaultValue="10"
-              className="h-8 w-[65px] rounded border-border text-center shadow-xs"
-              aria-label="Interval value"
-            />
-            <Select defaultValue="minutes">
-              <SelectTrigger className="h-8 w-[151px] rounded border-border shadow-xs">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="minutes">Minutes</SelectItem>
-              </SelectContent>
-            </Select>
-            <Info className="size-4 shrink-0 text-muted-foreground" aria-hidden />
-            <div className="flex items-center gap-2">
-              <span className="text-[13px] font-semibold leading-5 text-foreground">Active</span>
-              <Switch size="sm" aria-label="Schedule active" />
+              <Button
+                variant="default"
+                size="sm"
+                className="h-8 shrink-0 gap-1 border border-border bg-background text-muted-foreground shadow-xs"
+                type="button"
+              >
+                <Plus className="size-4" aria-hidden />
+                Add transformation
+              </Button>
             </div>
-            <Button variant="link" size="sm" className="h-8 px-2 text-primary" type="button">
-              Advanced options
-            </Button>
-          </div>
-        </div>
 
-        <div className="relative flex min-h-[420px] flex-1 flex-col overflow-hidden rounded-md border border-border bg-background shadow-[var(--shadow-db-sm)]">
-          <SavedPipelineDotGrid />
-          <div className="relative z-[1] flex flex-1 items-center justify-center overflow-x-auto p-6">
-            <div className="inline-flex flex-col">
-              <div className="inline-flex items-center gap-3">
-                <PipelineNodeCard
-                  icon={<ArrowInIcon size={16} className="shrink-0 text-foreground" />}
-                  title="Ingest source"
-                  subtitle="S3 Bucket"
-                >
-                  <ActiveBadge />
-                  <div className="h-4 shrink-0" />
-                  <p className="truncate px-4 pb-2 text-[13px] leading-5 text-foreground">
-                    {S3_CLOUDTRAIL_PATH}
-                  </p>
-                  <p className="px-4 pb-2 text-xs leading-4 text-foreground">
-                    {SAVED_BRONZE_FIELD_LIST_TEXT}
-                  </p>
-                  <PreviewAvailableRow />
-                </PipelineNodeCard>
-
-                <Button
-                  variant="default"
-                  size="sm"
-                  className="h-8 shrink-0 gap-1 border border-border bg-background text-muted-foreground shadow-xs"
-                  type="button"
-                >
-                  <Plus className="size-4" aria-hidden />
-                  Add transformation
-                </Button>
-              </div>
-
-              <div className="mt-4 flex justify-center" style={{ width: PIPELINE_CARD_WIDTH_PX }}>
-                <Button
-                  variant="default"
-                  size="sm"
-                  className="w-fit gap-1 border border-border bg-background text-muted-foreground shadow-xs"
-                  type="button"
-                >
-                  <Plus className="size-4" aria-hidden />
-                  Add enrichments
-                </Button>
-              </div>
+            <div className="mt-4 flex justify-center" style={{ width: PIPELINE_CARD_WIDTH_PX }}>
+              <Button
+                variant="default"
+                size="sm"
+                className="w-fit gap-1 border border-border bg-background text-muted-foreground shadow-xs"
+                type="button"
+              >
+                <Plus className="size-4" aria-hidden />
+                Add enrichments
+              </Button>
             </div>
-          </div>
         </div>
-      </div>
-    </div>
+      </SavedPipelineCanvas>
+    </SavedPipelinePageShell>
   )
 }
