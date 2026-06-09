@@ -13,7 +13,6 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { Button } from "@/components/ui/button"
-import { PAGE_TITLE_SEMIBOLD } from "@/components/lakewatch/pageTitleStyles"
 import {
   Select,
   SelectContent,
@@ -159,11 +158,11 @@ export function MedallionPipelineLoading() {
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
       <div
-        className="flex flex-1 flex-col gap-6 overflow-y-auto p-6 md:p-8"
+        className="flex flex-1 flex-col gap-3 overflow-y-auto p-6 md:p-8"
         aria-busy={!ready}
       >
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-          <div className="flex min-w-0 flex-col gap-2">
+        <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1">
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem>
@@ -183,13 +182,16 @@ export function MedallionPipelineLoading() {
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
-            <h2 className={PAGE_TITLE_SEMIBOLD}>
+            <h2 className="text-[15px] font-semibold leading-5 text-foreground">
               CloudTrail 1
             </h2>
           </div>
-          <div className="flex shrink-0 flex-col gap-2 sm:flex-row sm:items-center">
+          <div className="flex shrink-0 flex-wrap items-center gap-2 lg:justify-end">
+            <Button variant="default" size="sm" className="shadow-xs" asChild>
+              <Link href={backHref}>Back</Link>
+            </Button>
             <Select value={warehouse} onValueChange={setWarehouse}>
-              <SelectTrigger className="h-8 min-w-[240px] rounded border-border font-normal">
+              <SelectTrigger className="h-8 min-w-[200px] rounded border-border font-normal">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -197,14 +199,6 @@ export function MedallionPipelineLoading() {
                 <SelectItem value="main-warehouse">main-warehouse</SelectItem>
               </SelectContent>
             </Select>
-          </div>
-        </div>
-
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <Button variant="default" size="sm" className="shadow-xs" asChild>
-            <Link href={backHref}>Back</Link>
-          </Button>
-          <div className="flex flex-wrap items-center gap-2">
             <div className="flex rounded border border-border p-0.5 shadow-xs">
               <Button variant="default" size="sm" className="h-7 rounded px-3 text-xs" disabled={!interactive}>
                 UI

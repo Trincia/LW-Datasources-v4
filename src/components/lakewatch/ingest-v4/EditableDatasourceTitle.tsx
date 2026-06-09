@@ -4,9 +4,9 @@ import * as React from "react"
 import { PAGE_TITLE_BOLD } from "@/components/lakewatch/pageTitleStyles"
 import { cn } from "@/lib/utils"
 
-/** Left column in datasource detail headers — keeps title on one line beside workspace actions */
+/** Left cluster in datasource detail headers — breadcrumb inline with the title on one row */
 export const DATASOURCE_PAGE_HEADER_LEFT_CLASS =
-  "flex min-w-0 flex-1 flex-col gap-2"
+  "flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1"
 
 export function formatDatasourceDisplayTitle(name: string, draft = false) {
   return `${draft ? "New " : ""}${name}`
@@ -47,9 +47,9 @@ export function EditableDatasourceTitle({
 
   if (isEditing) {
     return (
-      <div className={cn("flex w-fit items-baseline gap-0", className)}>
+      <div className="flex w-fit items-baseline gap-0">
         {draft ? (
-          <span className={cn(PAGE_TITLE_BOLD, "shrink-0")}>New </span>
+          <span className={cn(PAGE_TITLE_BOLD, "shrink-0", className)}>New </span>
         ) : null}
         <input
           ref={inputRef}
@@ -69,7 +69,8 @@ export function EditableDatasourceTitle({
           aria-label="Datasource name"
           className={cn(
             PAGE_TITLE_BOLD,
-            "min-w-[12ch] bg-transparent p-0 outline-none ring-2 ring-primary/30 rounded-sm"
+            "min-w-[12ch] bg-transparent p-0 outline-none ring-2 ring-primary/30 rounded-sm",
+            className
           )}
         />
       </div>

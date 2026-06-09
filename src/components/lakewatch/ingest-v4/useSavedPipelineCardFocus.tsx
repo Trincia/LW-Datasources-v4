@@ -104,13 +104,13 @@ export function SavedPipelinePageShell({
   return (
     <div className="relative flex flex-1 flex-col overflow-hidden">
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-        <div className="flex shrink-0 flex-col gap-6 px-6 pt-6 md:px-8 md:pt-8">
+        <div className="flex shrink-0 flex-col gap-2 px-6 pt-4 md:px-8 md:pt-4">
           {header}
           {schedule}
         </div>
         <div
           className={cn(
-            "flex min-h-0 flex-1 flex-col overflow-hidden px-6 pt-6 md:px-8 md:pt-6",
+            "flex min-h-0 flex-1 flex-col overflow-hidden px-6 pt-3 md:px-8 md:pt-3",
             !focus.previewOpen && "pb-6 md:pb-8"
           )}
           style={{ paddingBottom: previewReserve }}

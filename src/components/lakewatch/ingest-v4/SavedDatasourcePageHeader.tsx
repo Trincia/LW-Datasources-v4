@@ -31,7 +31,7 @@ export function SavedDatasourcePageHeader({
   )
 
   return (
-    <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+    <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
       <div className={DATASOURCE_PAGE_HEADER_LEFT_CLASS}>
         <Breadcrumb>
           <BreadcrumbList>
@@ -48,6 +48,7 @@ export function SavedDatasourcePageHeader({
         <EditableDatasourceTitle
           defaultName={defaultName}
           draft={draft}
+          className="text-[15px] font-semibold leading-5"
           onDisplayTitleChange={setDisplayTitle}
         />
       </div>

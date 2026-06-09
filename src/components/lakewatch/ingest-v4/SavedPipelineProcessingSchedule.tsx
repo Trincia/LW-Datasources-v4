@@ -20,7 +20,7 @@ export function SavedPipelineProcessingSchedule({
   scheduleActive?: boolean
 }) {
   return (
-    <div className="rounded-md border border-border bg-background px-4 py-3 shadow-[var(--shadow-db-sm)]">
+    <div className="rounded border border-border bg-background px-3 py-1.5 shadow-[var(--shadow-db-sm)]">
       <div className="flex flex-wrap items-center gap-3">
         <span className="text-[13px] font-semibold leading-5 text-foreground">
           Processing schedule

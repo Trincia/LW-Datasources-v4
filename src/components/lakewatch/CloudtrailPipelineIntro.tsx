@@ -22,7 +22,6 @@ import {
 } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { ChevronDownIcon } from "@/components/icons"
-import { PAGE_TITLE_SEMIBOLD } from "@/components/lakewatch/pageTitleStyles"
 import { cn } from "@/lib/utils"
 
 /** Figma skeleton fill — BuildingBlocks / skeleton */
@@ -90,9 +89,9 @@ export function CloudtrailPipelineIntro() {
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
-      <div className="flex flex-1 flex-col gap-6 overflow-y-auto p-6 md:p-8" aria-busy>
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-          <div className="flex min-w-0 flex-col gap-2">
+      <div className="flex flex-1 flex-col gap-3 overflow-y-auto p-6 md:p-8" aria-busy>
+        <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1">
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem>
@@ -108,17 +107,20 @@ export function CloudtrailPipelineIntro() {
                 <BreadcrumbSeparator />
               </BreadcrumbList>
             </Breadcrumb>
-            <h2 className={PAGE_TITLE_SEMIBOLD}>
+            <h2 className="text-[15px] font-semibold leading-5 text-foreground">
               CloudTrail 1
             </h2>
           </div>
           <div className="flex shrink-0 flex-wrap items-center gap-2 lg:justify-end">
-            <div className="flex h-8 min-w-[240px] items-center gap-2 rounded border border-border bg-background px-3 shadow-xs">
+            <Button variant="default" size="sm" className="shadow-xs" asChild>
+              <Link href="/lakewatch/datasources/ingest">Back</Link>
+            </Button>
+            <div className="flex h-8 min-w-[200px] items-center gap-2 rounded border border-border bg-background px-3 shadow-xs">
               <span
                 className="size-2 shrink-0 rounded-full bg-[color:var(--success)]"
                 aria-hidden
               />
-              <span className="min-w-0 flex-1 truncate text-sm text-foreground">
+              <span className="min-w-0 flex-1 truncate text-[13px] text-foreground">
                 Lakewatch Warehouse
               </span>
               <ChevronDownIcon size={16} className="shrink-0 text-muted-foreground" aria-hidden />
@@ -150,14 +152,8 @@ export function CloudtrailPipelineIntro() {
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <Button variant="default" size="sm" className="shadow-xs" asChild>
-            <Link href="/lakewatch/datasources/ingest">Back</Link>
-          </Button>
-        </div>
-
         {/* Figma 200:40516 — Processing schedule */}
-        <div className="flex flex-col gap-3 rounded-md border border-border bg-background px-4 py-3 shadow-[var(--shadow-db-sm)]">
+        <div className="flex flex-col gap-3 rounded border border-border bg-background px-3 py-1.5 shadow-[var(--shadow-db-sm)]">
           <div className="flex flex-wrap items-center gap-3">
             <span className="text-[13px] font-semibold leading-5 text-foreground">
               Processing schedule
